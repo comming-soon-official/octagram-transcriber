@@ -10,6 +10,7 @@ export const users = pgTable('users', {
 
 export const meetings = pgTable('meetings', {
     id: text('id').notNull().primaryKey(),
+    meetingId: text('meeting_id'),
     createdAt: timestamp('created_at', {
         withTimezone: false
     })

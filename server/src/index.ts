@@ -2,6 +2,7 @@ import cors from 'cors' // Don't forget to install: npm install cors @types/cors
 import dotenv from 'dotenv'
 import express from 'express'
 
+import { router as meetings } from './routes/meetings'
 import { router as saveFootage } from './routes/save-footage'
 
 dotenv.config()
@@ -10,6 +11,7 @@ app.use(cors())
 app.use(express.json())
 
 app.use(saveFootage)
+app.use(meetings)
 app.get('/', (req, res) => {
     res.send('This is me from TranscriberBackend')
 })
