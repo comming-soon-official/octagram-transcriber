@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express'
 import multer from 'multer'
 
-import { addFootage } from '../controllers/save-footage'
+import { addFootage } from '../controllers/aggrigate'
 
 export const router = express.Router()
 

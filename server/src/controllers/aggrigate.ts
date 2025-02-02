@@ -10,15 +10,13 @@ type addFootageTypes = {
     startTime: string
     endTime: string
     file: Buffer
-    type?: 'start' | 'middle' | 'end'
 }
 export const addFootage = async ({
     user_id,
     meeting_id,
     startTime,
     endTime,
-    file,
-    type
+    file
 }: addFootageTypes) => {
     console.log('📁 Starting footage addition process')
     const fileUrl = await saveFile({
@@ -36,8 +34,7 @@ export const addFootage = async ({
         meetingId: meeting_id,
         userId: user_id,
         startTime: new Date(startTime),
-        endTime: new Date(endTime),
-        type: type
+        endTime: new Date(endTime)
     }
     console.log('📝 Preparing to insert footage data:', footageData)
 
@@ -87,7 +84,6 @@ const saveFile = async ({
             baseDir,
             sanitizedMeetingId,
             sanitizedUserId,
-            'raw-footage',
             sanitizedFilename
         )
         console.log('🔍 Full file path:', filePath)
