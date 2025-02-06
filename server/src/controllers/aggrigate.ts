@@ -10,13 +10,15 @@ type addFootageTypes = {
     startTime: string
     endTime: string
     file: Buffer
+    type?: 'start' | 'middle' | 'end'
 }
 export const addFootage = async ({
     user_id,
     meeting_id,
     startTime,
     endTime,
-    file
+    file,
+    type
 }: addFootageTypes) => {
     console.log('📁 Starting footage addition process')
     const fileUrl = await saveFile({
@@ -34,7 +36,8 @@ export const addFootage = async ({
         meetingId: meeting_id,
         userId: user_id,
         startTime: new Date(startTime),
-        endTime: new Date(endTime)
+        endTime: new Date(endTime),
+        type: type
     }
     console.log('📝 Preparing to insert footage data:', footageData)
 
@@ -72,7 +75,9 @@ const saveFile = async ({
 
         const startTimeMs = JSON.stringify(startTime)
         const endTimeMs = JSON.stringify(endTime)
-        const filename = `${startTimeMs}-${endTimeMs}.mp3`
+        // Get file extension from the incoming file type (default to .wav if not specified)
+        const fileExtension = '.wav' // Since frontend is sending wav format
+        const filename = `${startTimeMs}-${endTimeMs}${fileExtension}`
 
         const sanitizedFilename = path
             .normalize(filename)
