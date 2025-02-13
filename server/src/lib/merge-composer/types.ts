@@ -3,4 +3,6 @@ export type FootageMatrix = {
     startTime: Date
     endTime: Date
     filepath: string
+    userId?: string
+    meetingId?: string
 }

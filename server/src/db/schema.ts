@@ -35,3 +35,15 @@ export const footages = pgTable('footages', {
     endTime: timestamp('end_time'),
     type: text('type', { enum: ['start', 'middle', 'end'] })
 })
+
+export const groupedFootages = pgTable('groups', {
+    id: text('id').notNull().primaryKey(),
+    file: text('file_url'),
+    createdAt: timestamp('created_at', { withTimezone: false })
+        .notNull()
+        .defaultNow(),
+    userId: text('user_id'),
+    meetingId: text('meeting_id'),
+    startTime: timestamp('start_time'),
+    endTime: timestamp('end_time')
+})

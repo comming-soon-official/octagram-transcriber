@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 
 interface RecorderProps {
     userId?: string
@@ -22,7 +22,7 @@ const Recorder: React.FC<RecorderProps> = ({
         type: 'start' | 'middle' | 'end'
     ) => {
         const formData = new FormData()
-        formData.append('file', audioBlob, 'audio.wav')
+        formData.append('file', audioBlob, 'audio.webm')
         formData.append('user_id', userId)
         formData.append('meeting_id', meetingId)
         formData.append('startTime', new Date(Date.now() - 5000).toISOString())
@@ -37,29 +37,23 @@ const Recorder: React.FC<RecorderProps> = ({
                     body: formData
                 }
             )
-            if (!response.ok) throw new Error('Failed to send chunk')
+            if (!response.ok)
+                throw new Error(`HTTP error! status: ${response.status}`)
             console.log(`Chunk sent successfully (${type})`)
         } catch (error) {
             console.error('Error sending chunk:', error)
+            setStatus('Failed to send audio chunk')
         }
     }
-
-    const processAndSendChunks = useCallback(() => {
-        if (audioChunks.current.length === 0) return
-
-        const audioBlob = new Blob(audioChunks.current, { type: 'audio/wav' })
-        const chunkType = isFirstChunk.current ? 'start' : 'middle'
-        sendAudioChunk(audioBlob, chunkType)
-        isFirstChunk.current = false
-        audioChunks.current = []
-    }, [])
 
     const startRecording = async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: true
             })
-            mediaRecorder.current = new MediaRecorder(stream)
+            mediaRecorder.current = new MediaRecorder(stream, {
+                mimeType: 'audio/webm;codecs=opus'
+            })
             audioChunks.current = []
             startTime.current = new Date()
             setIsRecording(true)
@@ -72,40 +66,53 @@ const Recorder: React.FC<RecorderProps> = ({
                 }
             }
 
-            mediaRecorder.current.start(5000) // Changed from 100 to 5000ms
+            mediaRecorder.current.start(5000) // Record in 5-second chunks
 
             // Set up interval for sending chunks
-            chunksInterval.current = setInterval(processAndSendChunks, 5000)
+            chunksInterval.current = setInterval(async () => {
+                if (audioChunks.current.length > 0) {
+                    const audioBlob = new Blob(audioChunks.current, {
+                        type: 'audio/webm;codecs=opus'
+                    })
+                    const type = isFirstChunk.current ? 'start' : 'middle'
+                    await sendAudioChunk(audioBlob, type)
+                    isFirstChunk.current = false
+                    audioChunks.current = [] // Clear chunks after sending
+                }
+            }, 5000)
         } catch (error) {
-            console.error('Error accessing microphone:', error)
-            setStatus('Error accessing microphone')
+            console.error('Error starting recording:', error)
+            setStatus('Failed to start recording')
         }
     }
 
-    const stopRecording = () => {
-        if (!mediaRecorder.current || !isRecording) return
+    const stopRecording = async () => {
+        try {
+            if (mediaRecorder.current && isRecording) {
+                mediaRecorder.current.stop()
+                clearInterval(chunksInterval.current!)
 
-        if (chunksInterval.current) {
-            clearInterval(chunksInterval.current)
+                // Send final chunk
+                if (audioChunks.current.length > 0) {
+                    const finalBlob = new Blob(audioChunks.current, {
+                        type: 'audio/webm;codecs=opus'
+                    })
+                    await sendAudioChunk(finalBlob, 'end')
+                }
+
+                // Cleanup
+                mediaRecorder.current.stream
+                    .getTracks()
+                    .forEach((track) => track.stop())
+                audioChunks.current = []
+                isFirstChunk.current = true
+                setIsRecording(false)
+                setStatus('Recording stopped')
+            }
+        } catch (error) {
+            console.error('Error stopping recording:', error)
+            setStatus('Failed to stop recording')
         }
-
-        mediaRecorder.current.stop()
-        mediaRecorder.current.stream
-            .getTracks()
-            .forEach((track) => track.stop())
-
-        // Send final chunk
-        if (audioChunks.current.length > 0) {
-            const finalBlob = new Blob(audioChunks.current, {
-                type: 'audio/wav'
-            })
-            sendAudioChunk(finalBlob, 'end')
-            audioChunks.current = []
-        }
-
-        setIsRecording(false)
-        setStatus('Recording stopped')
-        isFirstChunk.current = true // Reset for next recording session
     }
 
     return (
