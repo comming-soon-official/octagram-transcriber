@@ -78,7 +78,7 @@ const saveFile = async ({
 
         const startTimeMs = JSON.stringify(startTime)
         const endTimeMs = JSON.stringify(endTime)
-        const filename = `${startTimeMs}-${endTimeMs}.webm`
+        const filename = `${startTimeMs}-${endTimeMs}.mkv`
 
         const sanitizedFilename = path
             .normalize(filename)

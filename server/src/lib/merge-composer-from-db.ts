@@ -51,7 +51,7 @@ export async function mergeComposerFromDB(
         process.cwd(),
         `${meetId}-${userId}-filelist.txt`
     )
-    
+
     // Verify each file exists and is readable before adding to the list
     const validChunks = await Promise.all(
         chunks.map(async (chunk) => {
@@ -63,7 +63,7 @@ export async function mergeComposerFromDB(
                 return null
             }
         })
-    ).then(chunks => chunks.filter(Boolean))
+    ).then((chunks) => chunks.filter(Boolean))
 
     if (validChunks.length === 0) {
         throw new Error('No valid audio chunks found')
@@ -71,26 +71,33 @@ export async function mergeComposerFromDB(
 
     // Use absolute paths and proper escaping for the file list
     const fileListContent = validChunks
-        .map((chunk) => `file '${path.resolve(chunk!.filepath).replace(/'/g, "'\\''")}'`)
+        .map(
+            (chunk) =>
+                `file '${path.resolve(chunk!.filepath).replace(/'/g, "'\\''")}'`
+        )
         .join('\n')
+
     await fs.writeFile(tempFileList, fileListContent)
 
     // Define the output merged file path
     const outputMergedFile = path.join(
         process.cwd(),
-        `${meetId}-${userId}-merged.webm`
+        `${meetId}-${userId}-merged.mkv`
     )
 
     return new Promise((resolve, reject) => {
         // Add -strict experimental flag and specify the codec explicitly
-        const command = `ffmpeg -y -f concat -safe 0 -i "${tempFileList.replace(/"/g, '\\"')}" -c:v copy -c:a copy -strict experimental "${outputMergedFile.replace(/"/g, '\\"')}"`
+        const command = `ffmpeg -y -f concat -safe 0 -i "${tempFileList.replace(
+            /"/g,
+            '\\"'
+        )}" -c:v copy -c:a copy -strict experimental "${outputMergedFile.replace(
+            /"/g,
+            '\\"'
+        )}"`
         console.log('Executing command:', command)
 
-        exec(command, (error, stdout, stderr) => {
+        const ffmpeg = exec(command, (error, stdout, stderr) => {
             // Clean up temporary file list regardless of success/failure
-            fs.unlink(tempFileList).catch((err) => {
-                console.warn('Failed to clean up temp file:', err)
-            })
 
             if (error) {
                 console.error('FFmpeg stderr:', stderr)
@@ -98,6 +105,12 @@ export async function mergeComposerFromDB(
             } else {
                 resolve(outputMergedFile)
             }
+        })
+
+        ffmpeg.on('exit', () => {
+            fs.unlink(tempFileList).catch((err) => {
+                console.warn('Failed to clean up temp file:', err)
+            })
         })
     })
 }

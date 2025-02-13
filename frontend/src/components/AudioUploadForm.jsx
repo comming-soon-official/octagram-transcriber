@@ -25,7 +25,7 @@ function AudioUploadForm() {
         async (audioBlob, chunkStartTime, chunkType) => {
             try {
                 const formPayload = new FormData()
-                formPayload.append('file', audioBlob, 'audio-chunk.webm')
+                formPayload.append('file', audioBlob, 'audio-chunk.mkv')
                 formPayload.append('user_id', formData.userId)
                 formPayload.append('meeting_id', formData.meetingId)
                 formPayload.append('startTime', chunkStartTime.toISOString())
