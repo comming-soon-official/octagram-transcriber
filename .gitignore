@@ -33,3 +33,4 @@ ore
 # Env
 **.env*
 uploads
+*-filelist.txt

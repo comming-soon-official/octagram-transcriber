@@ -15,6 +15,7 @@ app.use(meetings)
 app.get('/', (req, res) => {
     res.send('This is me from TranscriberBackend')
 })
+
 // Start the server
 const PORT = process.env.PORT || 8000
 app.listen(PORT, () =>
