@@ -1,146 +1,178 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import '../style.css'
 
 function AudioUploadForm() {
-  const [status, setStatus] = useState('')
-  const [isRecording, setIsRecording] = useState(false)
-  const [formData, setFormData] = useState({
-    userId: '',
-    meetingId: ''
-  })
-  
-  const mediaRecorder = useRef(null)
-  const chunksRef = useRef([])
-  const intervalRef = useRef(null)
+    const [status, setStatus] = useState('')
+    const isRecordingRef = useRef(false)
+    const [formData, setFormData] = useState({
+        userId: '',
+        meetingId: ''
+    })
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
-  }
+    const intervalRef = useRef(null)
+    const mediaRecorder = useRef(null)
+    const chunksRef = useRef([])
 
-  const sendAudioChunk = async (audioBlob, chunkStartTime) => {
-    try {
-      const formPayload = new FormData()
-      formPayload.append('file', audioBlob, 'audio-chunk.webm')
-      formPayload.append('user_id', formData.userId)
-      formPayload.append('meeting_id', formData.meetingId)
-      formPayload.append('startTime', chunkStartTime.toISOString())
-      formPayload.append('endTime', new Date().toISOString())
+    const handleInputChange = useCallback((e) => {
+        const { name, value } = e.target
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value
+        }))
+    }, [])
 
-      const response = await fetch('http://localhost:5000/send/audio-chunks', {
-        method: 'POST',
-        body: formPayload
-      })
+    const sendAudioChunk = useCallback(
+        async (audioBlob, chunkStartTime, chunkType) => {
+            try {
+                const formPayload = new FormData()
+                formPayload.append('file', audioBlob, 'audio-chunk.webm')
+                formPayload.append('user_id', formData.userId)
+                formPayload.append('meeting_id', formData.meetingId)
+                formPayload.append('startTime', chunkStartTime.toISOString())
+                formPayload.append('endTime', new Date().toISOString())
+                formPayload.append('chunkType', chunkType)
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-    } catch (error) {
-      console.error('Error sending chunk:', error)
-      setStatus(`Upload failed: ${error.message}`)
-    }
-  }
+                const response = await fetch(
+                    'http://localhost:8000/send/audio-chunks',
+                    {
+                        method: 'POST',
+                        body: formPayload
+                    }
+                )
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-      mediaRecorder.current = new MediaRecorder(stream)
-      chunksRef.current = []
-      let chunkStartTime = new Date()
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`)
+                }
+            } catch (error) {
+                console.error('Error sending chunk:', error)
+                setStatus(`Upload failed: ${error.message}`)
+            }
+        },
+        [formData, setStatus]
+    )
 
-      mediaRecorder.current.ondataavailable = (e) => {
-        chunksRef.current.push(e.data)
-      }
+    const startRecording = useCallback(async () => {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: true
+            })
+            mediaRecorder.current = new MediaRecorder(stream)
+            chunksRef.current = []
+            let isFirstChunk = true
+            let chunkStartTime = new Date()
 
-      mediaRecorder.current.onstop = async () => {
-        const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
-        await sendAudioChunk(audioBlob, chunkStartTime)
-        chunksRef.current = []
-        chunkStartTime = new Date()
-        
-        if (isRecording) {
-          mediaRecorder.current.start()
+            mediaRecorder.current.ondataavailable = (e) => {
+                chunksRef.current.push(e.data)
+            }
+
+            intervalRef.current = setInterval(async () => {
+                if (
+                    mediaRecorder.current &&
+                    mediaRecorder.current.state === 'recording'
+                ) {
+                    mediaRecorder.current.stop()
+
+                    const audioBlob = new Blob(chunksRef.current, {
+                        type: 'audio/webm'
+                    })
+                    const chunkType = isFirstChunk ? 'start' : 'middle'
+                    await sendAudioChunk(audioBlob, chunkStartTime, chunkType)
+
+                    chunksRef.current = []
+                    chunkStartTime = new Date()
+                    isFirstChunk = false
+
+                    mediaRecorder.current.start()
+                }
+            }, 5000)
+
+            mediaRecorder.current.onstop = () => {
+                if (!isRecordingRef.current) {
+                    const audioBlob = new Blob(chunksRef.current, {
+                        type: 'audio/webm'
+                    })
+                    sendAudioChunk(audioBlob, chunkStartTime, 'end')
+                }
+            }
+
+            isRecordingRef.current = true
+            mediaRecorder.current.start()
+            setStatus('Recording...')
+        } catch (error) {
+            console.error('Error starting recording:', error)
+            setStatus(`Recording failed: ${error.message}`)
         }
-      }
+    }, [sendAudioChunk, setStatus])
 
-      setIsRecording(true)
-      mediaRecorder.current.start()
-
-      // Stop and send chunks every 5 seconds
-      intervalRef.current = setInterval(() => {
-        if (mediaRecorder.current.state === 'recording') {
-          mediaRecorder.current.stop()
+    const stopRecording = useCallback(() => {
+        isRecordingRef.current = false
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current)
+            intervalRef.current = null
         }
-      }, 5000)
+        if (mediaRecorder.current) {
+            mediaRecorder.current.stop()
+            mediaRecorder.current.stream
+                .getTracks()
+                .forEach((track) => track.stop())
+        }
+        setStatus('Recording stopped')
+    }, [setStatus])
 
-      setStatus('Recording...')
-    } catch (error) {
-      console.error('Error starting recording:', error)
-      setStatus(`Recording failed: ${error.message}`)
-    }
-  }
+    console.log('Is recording => ', isRecordingRef.current)
 
-  const stopRecording = () => {
-    setIsRecording(false)
-    if (mediaRecorder.current) {
-      mediaRecorder.current.stop()
-      mediaRecorder.current.stream.getTracks().forEach(track => track.stop())
-    }
-    if (intervalRef.current) {
-      clearInterval(intervalRef.current)
-    }
-    setStatus('Recording stopped')
-  }
+    return (
+        <div className="upload-form">
+            <form onSubmit={(e) => e.preventDefault()}>
+                <div>
+                    <label htmlFor="userId">User ID:</label>
+                    <input
+                        type="text"
+                        id="userId"
+                        name="userId"
+                        value={formData.userId}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
 
-  return (
-    <div className="upload-form">
-      <form onSubmit={(e) => e.preventDefault()}>
-        <div>
-          <label htmlFor="userId">User ID:</label>
-          <input
-            type="text"
-            id="userId"
-            name="userId"
-            value={formData.userId}
-            onChange={handleInputChange}
-            required
-          />
+                <div>
+                    <label htmlFor="meetingId">Meeting ID:</label>
+                    <input
+                        type="text"
+                        id="meetingId"
+                        name="meetingId"
+                        value={formData.meetingId}
+                        onChange={handleInputChange}
+                        required
+                    />
+                </div>
+
+                <div>
+                    {!isRecordingRef.current ? (
+                        <button type="button" onClick={startRecording}>
+                            Start Recording
+                        </button>
+                    ) : (
+                        <button type="button" onClick={stopRecording}>
+                            Stop Recording
+                        </button>
+                    )}
+                </div>
+            </form>
+
+            {status && (
+                <div
+                    className="status"
+                    style={{
+                        color: status.includes('failed') ? 'red' : 'green'
+                    }}
+                >
+                    {status}
+                </div>
+            )}
         </div>
-
-        <div>
-          <label htmlFor="meetingId">Meeting ID:</label>
-          <input
-            type="text"
-            id="meetingId"
-            name="meetingId"
-            value={formData.meetingId}
-            onChange={handleInputChange}
-            required
-          />
-        </div>
-
-        <div>
-          {!isRecording ? (
-            <button type="button" onClick={startRecording}>Start Recording</button>
-          ) : (
-            <button type="button" onClick={stopRecording}>Stop Recording</button>
-          )}
-        </div>
-      </form>
-
-      {status && (
-        <div 
-          className="status"
-          style={{ color: status.includes('failed') ? 'red' : 'green' }}
-        >
-          {status}
-        </div>
-      )}
-    </div>
-  )
+    )
 }
 
 export default AudioUploadForm

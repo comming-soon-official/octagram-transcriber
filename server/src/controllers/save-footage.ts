@@ -10,21 +10,25 @@ type addFootageTypes = {
     startTime: string
     endTime: string
     file: Buffer
+    chunkType: 'start' | 'middle' | 'end'
 }
 export const addFootage = async ({
     user_id,
     meeting_id,
     startTime,
     endTime,
-    file
+    file,
+    chunkType
 }: addFootageTypes) => {
     console.log('📁 Starting footage addition process')
+    console.log(`🔍 Chunk type: ${chunkType}`)
     const fileUrl = await saveFile({
         user_id,
         meeting_id,
         startTime,
         endTime,
-        file
+        file,
+        chunkType
     })
     console.log('💾 File saved successfully at:', fileUrl)
 
@@ -34,7 +38,8 @@ export const addFootage = async ({
         meetingId: meeting_id,
         userId: user_id,
         startTime: new Date(startTime),
-        endTime: new Date(endTime)
+        endTime: new Date(endTime),
+        chunkType
     }
     console.log('📝 Preparing to insert footage data:', footageData)
 
@@ -47,7 +52,8 @@ const saveFile = async ({
     meeting_id,
     startTime,
     endTime,
-    file
+    file,
+    chunkType
 }: addFootageTypes): Promise<string> => {
     console.log('📁 Starting file save process')
 

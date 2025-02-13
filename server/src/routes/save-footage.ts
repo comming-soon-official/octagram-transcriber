@@ -19,12 +19,13 @@ router.post(
                 return
             }
 
-            const { user_id, meeting_id, startTime, endTime } = req.body
+            const { user_id, meeting_id, startTime, endTime, chunkType } = req.body
             console.log('📋 Request payload:', {
                 user_id,
                 meeting_id,
                 startTime,
-                endTime
+                endTime,
+                chunkType
             })
 
             await addFootage({
@@ -32,7 +33,8 @@ router.post(
                 meeting_id,
                 startTime,
                 endTime,
-                file: req.file.buffer
+                file: req.file.buffer,
+                chunkType
             })
 
             console.log('✅ Footage uploaded successfully')

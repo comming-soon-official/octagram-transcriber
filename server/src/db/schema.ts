@@ -33,5 +33,6 @@ export const footages = pgTable('footages', {
     meetingId: text('meeting_id'),
     startTime: timestamp('start_time'),
     endTime: timestamp('end_time'),
-    transcribed: text('transcribed_url')
+    transcribed: text('transcribed_url'),
+    chunkType: text('chunk_type')
 })
