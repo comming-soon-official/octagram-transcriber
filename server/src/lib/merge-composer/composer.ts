@@ -1,10 +1,9 @@
 import { ne } from 'drizzle-orm'
 import path from 'path'
-import { v4 as uuidv4 } from 'uuid'
 
 import { db, schema } from '../../db'
 import { mergeAudioFiles } from '../audio-merger/merger'
-import { sortFootages } from './sortfootages'
+import { sortFootages } from './footage'
 
 const composer = async (meetingId: string) => {
     const meetingData = await db

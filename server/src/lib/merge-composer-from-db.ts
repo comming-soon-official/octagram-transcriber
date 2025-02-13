@@ -5,7 +5,7 @@ import path from 'path'
 import { db } from '../db'
 import { footages } from '../db/schema'
 import { and, eq } from 'drizzle-orm'
-import { sortFootages } from './merge-composer/sortfootages'
+import { sortFootages } from './merge-composer/footage'
 import { processAudioMatrix } from './merge-composer/audio-composer'
 
 interface AudioChunk {
