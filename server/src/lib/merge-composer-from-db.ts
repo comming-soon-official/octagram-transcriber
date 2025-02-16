@@ -8,11 +8,6 @@ import { and, eq } from 'drizzle-orm'
 import { sortFootages } from './merge-composer/footage'
 import { processAudioMatrix } from './merge-composer/audio-composer'
 
-interface AudioChunk {
-    timestamp: number
-    filepath: string
-}
-
 // Fetch audio chunks from the database for the given meetId and userId
 async function getAudioChunksFromDB(
     meetId: string,

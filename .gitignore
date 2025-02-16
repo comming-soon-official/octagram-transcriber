@@ -34,3 +34,4 @@ ore
 **.env*
 uploads
 *-filelist.txt
+tmp/

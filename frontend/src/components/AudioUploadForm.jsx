@@ -56,13 +56,17 @@ function AudioUploadForm() {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: true
             })
-            mediaRecorder.current = new MediaRecorder(stream)
+            mediaRecorder.current = new MediaRecorder(stream, {
+                mimeType: 'audio/webm;codecs=opus'  // Specify codec explicitly
+            })
             chunksRef.current = []
             let isFirstChunk = true
             let chunkStartTime = new Date()
 
             mediaRecorder.current.ondataavailable = (e) => {
-                chunksRef.current.push(e.data)
+                if (e.data.size > 0) {  // Only add non-empty chunks
+                    chunksRef.current.push(e.data)
+                }
             }
 
             intervalRef.current = setInterval(async () => {
@@ -71,27 +75,39 @@ function AudioUploadForm() {
                     mediaRecorder.current.state === 'recording'
                 ) {
                     mediaRecorder.current.stop()
-
-                    const audioBlob = new Blob(chunksRef.current, {
-                        type: 'audio/webm'
+                    
+                    // Wait for the data to be available
+                    await new Promise(resolve => {
+                        mediaRecorder.current.onstop = async () => {
+                            if (chunksRef.current.length > 0) {
+                                const audioBlob = new Blob(chunksRef.current, {
+                                    type: 'audio/webm;codecs=opus'
+                                })
+                                const chunkType = isFirstChunk ? 'start' : 'middle'
+                                await sendAudioChunk(audioBlob, chunkStartTime, chunkType)
+                            }
+                            
+                            chunksRef.current = []
+                            chunkStartTime = new Date()
+                            isFirstChunk = false
+                            
+                            // Start recording the next chunk
+                            if (isRecordingRef.current) {
+                                mediaRecorder.current.start()
+                            }
+                            resolve()
+                        }
                     })
-                    const chunkType = isFirstChunk ? 'start' : 'middle'
-                    await sendAudioChunk(audioBlob, chunkStartTime, chunkType)
-
-                    chunksRef.current = []
-                    chunkStartTime = new Date()
-                    isFirstChunk = false
-
-                    mediaRecorder.current.start()
                 }
             }, 5000)
 
-            mediaRecorder.current.onstop = () => {
-                if (!isRecordingRef.current) {
+            mediaRecorder.current.onstop = async () => {
+                if (!isRecordingRef.current && chunksRef.current.length > 0) {
                     const audioBlob = new Blob(chunksRef.current, {
-                        type: 'audio/webm'
+                        type: 'audio/webm;codecs=opus'
                     })
-                    sendAudioChunk(audioBlob, chunkStartTime, 'end')
+                    await sendAudioChunk(audioBlob, chunkStartTime, 'end')
+                    chunksRef.current = []
                 }
             }
 

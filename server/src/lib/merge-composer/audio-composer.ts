@@ -45,12 +45,12 @@ async function mergeAudioSequence(files: string[]): Promise<string> {
 
 async function processSequence(sequence: FootageMatrix[]): Promise<string> {
     // Process each file in the sequence to remove silence
-    const processedFiles = await Promise.all(
-        sequence.map((footage) => removeSilence(footage.filepath))
-    )
+    // const processedFiles = await Promise.all(
+    //     sequence.map((footage) => removeSilence(footage.filepath))
+    // )
 
     // Merge the processed files
-    return await mergeAudioSequence(processedFiles)
+    return await mergeAudioSequence(sequence.map((f) => f.filepath))
 }
 
 export async function processAudioMatrix(
@@ -70,4 +70,3 @@ export async function processAudioMatrix(
         throw error
     }
 }
-
