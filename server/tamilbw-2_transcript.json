@@ -1,0 +1,738 @@
+{
+  "full_text": " எனக்கே புடிச்சிருக்கு, இந்த பிராங்கு ஹலோ கேக்குதாடா ஆ சொல்ல இங்க வந்திருக்கிறேன்டா, அண்ணா நகர் தாவர் பார்க்கு வந்தேன் சரி என் அக்கா தூரமா இருக்காங்க ஆ என்னை யாரும் பார்த்துன்னு கொள்கிறாய் அசிங்கப்பட்டான் ஆட்டோக்கார் ஏய் இங்க இரண்டு பெண்ணுடா ஏதாவது பெட்டு நம்பர் வாங்கிடுப்பா நாயில் போர் ரீல் போர் சொல்றுக்கு கேளு, சம்மையான் இருந்துச்சி டேய் உங்க ஆஜுகோர் அளவில்லையாடா நான் பேசவே இல்லடா, அவங்களா வந்து ஹாய் பிரோ, நீங்க எங்க வேலை செய்யுங்கின்னு கேட்டாங்க அதாவது வாய்த்து வந்த பிடியெல்லாம் பேசப்படுகிறார் எதுவும்தான் நாயம் பேசணுமால்லியா? நா சொன்னேன் இந்த மாதிரியை எல்லாம் சொல்லிட்டேன் இந்த மாதிரியை, இந்த மாதிரி, இந்த மாதிரி ஆனா நா சொல்லிட்டேன் இல்லை வீட்டுலார் மிகவும் சிரித்துங்க இவனுக்கு முகர்க்கட்டையெல்லாம் பார்த்தாக்க அப்படி ஒரு நல்லவர்கள் மாதிரி கிறியல்ல என்னுடைய நண்பன் வந்து பெண்ணுங்களிட்டுல சம்மையா பேசுவார் என்று சொன்னேன் சொல்லித்தார் அல்லாம் பெண்ணா உன்னை நம்பர் கொடுக்கட்டா நிறைய கேட்டுக்குத் தேர்ந்துக்குய் தேம் இல்லைங்க ஏயா ஏயா உதுசாயாரிட்டு ஏமாற விரும்புல ஏமா என்றுதானே போதும் அப்படித்துன",
+  "translated_full_text": "I was enjoying myself, then this prank call came. The person on the other end was not stopping, I went to the city park. Okay my sister, are you far away? Why are you staring at me, the auto driver asked. Hey, here are two girls buying some pet numbers. The fight is real, they are saying. Ask the girl in green, why don't you tell the truth? Are you angry today? Why are you not speaking at all? Are they coming saying hi bro, where are you working? That's why I asked. Have you always talked like this? The people who come are talking high. Isn't it true for me? I told this kind of thing, I said this kind of thing, I said this kind of thing, but they are not kidding. My friend came and said to the girls, don't talk to him like that, but they said not to trust the girl and give the number, asked a lot and decided to leave, there is no need. Oh, oh, he said to leave.",
+  "chunks": [
+    {
+      "start_time": 0,
+      "end_time": 0.34,
+      "original_text": " எனக்கே",
+      "translated_text": "To me"
+    },
+    {
+      "start_time": 0.34,
+      "end_time": 0.86,
+      "original_text": " புடிச்சிருக்கு,",
+      "translated_text": "\"I am hungry,\""
+    },
+    {
+      "start_time": 0.86,
+      "end_time": 1.12,
+      "original_text": " இந்த",
+      "translated_text": "This"
+    },
+    {
+      "start_time": 1.12,
+      "end_time": 1.48,
+      "original_text": " பிராங்கு",
+      "translated_text": "Prank"
+    },
+    {
+      "start_time": 1.68,
+      "end_time": 3.32,
+      "original_text": " ஹலோ",
+      "translated_text": "Hello"
+    },
+    {
+      "start_time": 3.5,
+      "end_time": 4.06,
+      "original_text": " கேக்குதாடா",
+      "translated_text": "Dance and Enjoy"
+    },
+    {
+      "start_time": 4.3,
+      "end_time": 4.42,
+      "original_text": " ஆ",
+      "translated_text": "\"A\""
+    },
+    {
+      "start_time": 4.42,
+      "end_time": 4.84,
+      "original_text": " சொல்ல",
+      "translated_text": "Word"
+    },
+    {
+      "start_time": 4.94,
+      "end_time": 5.1,
+      "original_text": " இங்க",
+      "translated_text": "Here"
+    },
+    {
+      "start_time": 5.1,
+      "end_time": 5.74,
+      "original_text": " வந்திருக்கிறேன்டா,",
+      "translated_text": "\"I have arrived.\""
+    },
+    {
+      "start_time": 5.74,
+      "end_time": 6,
+      "original_text": " அண்ணா",
+      "translated_text": "\"Brother\""
+    },
+    {
+      "start_time": 6,
+      "end_time": 6.24,
+      "original_text": " நகர்",
+      "translated_text": "City"
+    },
+    {
+      "start_time": 6.24,
+      "end_time": 6.5,
+      "original_text": " தாவர்",
+      "translated_text": "Plant"
+    },
+    {
+      "start_time": 6.5,
+      "end_time": 6.7,
+      "original_text": " பார்க்கு",
+      "translated_text": "Look"
+    },
+    {
+      "start_time": 6.7,
+      "end_time": 7.16,
+      "original_text": " வந்தேன்",
+      "translated_text": "I have come."
+    },
+    {
+      "start_time": 7.3,
+      "end_time": 7.62,
+      "original_text": " சரி",
+      "translated_text": "\"Okay\""
+    },
+    {
+      "start_time": 8.12,
+      "end_time": 8.32,
+      "original_text": " என்",
+      "translated_text": "My"
+    },
+    {
+      "start_time": 8.32,
+      "end_time": 8.54,
+      "original_text": " அக்கா",
+      "translated_text": "\"Brother\""
+    },
+    {
+      "start_time": 8.54,
+      "end_time": 8.88,
+      "original_text": " தூரமா",
+      "translated_text": "far"
+    },
+    {
+      "start_time": 8.88,
+      "end_time": 9.24,
+      "original_text": " இருக்காங்க",
+      "translated_text": "Are you there"
+    },
+    {
+      "start_time": 9.56,
+      "end_time": 9.82,
+      "original_text": " ஆ",
+      "translated_text": "\"A\""
+    },
+    {
+      "start_time": 9.82,
+      "end_time": 10.32,
+      "original_text": " என்னை",
+      "translated_text": "\"Me\""
+    },
+    {
+      "start_time": 10.32,
+      "end_time": 10.56,
+      "original_text": " யாரும்",
+      "translated_text": "No one"
+    },
+    {
+      "start_time": 10.56,
+      "end_time": 10.92,
+      "original_text": " பார்த்துன்னு",
+      "translated_text": "Sorry, the text provided is not a complete sentence in Tamil. It seems to be a fragment of a word or phrase. Can you please provide more context or the full text for an accurate translation?"
+    },
+    {
+      "start_time": 10.92,
+      "end_time": 11.14,
+      "original_text": " கொள்கிறாய்",
+      "translated_text": "You are welcome."
+    },
+    {
+      "start_time": 11.26,
+      "end_time": 12.42,
+      "original_text": " அசிங்கப்பட்டான்",
+      "translated_text": "Confused"
+    },
+    {
+      "start_time": 12.42,
+      "end_time": 13.02,
+      "original_text": " ஆட்டோக்கார்",
+      "translated_text": "Driver"
+    },
+    {
+      "start_time": 13.1,
+      "end_time": 13.42,
+      "original_text": " ஏய்",
+      "translated_text": "Hey"
+    },
+    {
+      "start_time": 13.42,
+      "end_time": 13.74,
+      "original_text": " இங்க",
+      "translated_text": "Here"
+    },
+    {
+      "start_time": 13.74,
+      "end_time": 14.3,
+      "original_text": " இரண்டு",
+      "translated_text": "Two"
+    },
+    {
+      "start_time": 14.3,
+      "end_time": 14.66,
+      "original_text": " பெண்ணுடா",
+      "translated_text": "Dear girl"
+    },
+    {
+      "start_time": 15.22,
+      "end_time": 16.02,
+      "original_text": " ஏதாவது",
+      "translated_text": "Anything"
+    },
+    {
+      "start_time": 16.02,
+      "end_time": 16.16,
+      "original_text": " பெட்டு",
+      "translated_text": "Basket"
+    },
+    {
+      "start_time": 16.16,
+      "end_time": 16.46,
+      "original_text": " நம்பர்",
+      "translated_text": "\"Number\""
+    },
+    {
+      "start_time": 16.46,
+      "end_time": 16.76,
+      "original_text": " வாங்கிடுப்பா",
+      "translated_text": "Buy it."
+    },
+    {
+      "start_time": 17,
+      "end_time": 17.46,
+      "original_text": " நாயில்",
+      "translated_text": "\"Dog\""
+    },
+    {
+      "start_time": 17.46,
+      "end_time": 17.88,
+      "original_text": " போர்",
+      "translated_text": "War"
+    },
+    {
+      "start_time": 17.96,
+      "end_time": 18.46,
+      "original_text": " ரீல்",
+      "translated_text": "Real"
+    },
+    {
+      "start_time": 18.46,
+      "end_time": 18.88,
+      "original_text": " போர்",
+      "translated_text": "War"
+    },
+    {
+      "start_time": 19.04,
+      "end_time": 19.76,
+      "original_text": " சொல்றுக்கு",
+      "translated_text": "To say"
+    },
+    {
+      "start_time": 19.76,
+      "end_time": 20.12,
+      "original_text": " கேளு,",
+      "translated_text": "\"Listen,\""
+    },
+    {
+      "start_time": 20.12,
+      "end_time": 20.86,
+      "original_text": " சம்மையான்",
+      "translated_text": "Respectful"
+    },
+    {
+      "start_time": 20.86,
+      "end_time": 21.16,
+      "original_text": " இருந்துச்சி",
+      "translated_text": "Irundhucchi"
+    },
+    {
+      "start_time": 21.42,
+      "end_time": 21.82,
+      "original_text": " டேய்",
+      "translated_text": "\"Hey\""
+    },
+    {
+      "start_time": 21.82,
+      "end_time": 22.34,
+      "original_text": " உங்க",
+      "translated_text": "\"Your\""
+    },
+    {
+      "start_time": 22.34,
+      "end_time": 22.9,
+      "original_text": " ஆஜுகோர்",
+      "translated_text": "\"Ajukor\""
+    },
+    {
+      "start_time": 22.9,
+      "end_time": 23.48,
+      "original_text": " அளவில்லையாடா",
+      "translated_text": "No problem"
+    },
+    {
+      "start_time": 23.76,
+      "end_time": 23.98,
+      "original_text": " நான்",
+      "translated_text": "I"
+    },
+    {
+      "start_time": 23.98,
+      "end_time": 24.46,
+      "original_text": " பேசவே",
+      "translated_text": "Speak"
+    },
+    {
+      "start_time": 24.46,
+      "end_time": 24.86,
+      "original_text": " இல்லடா,",
+      "translated_text": "\"Ilalada,\""
+    },
+    {
+      "start_time": 24.86,
+      "end_time": 25.36,
+      "original_text": " அவங்களா",
+      "translated_text": "You all"
+    },
+    {
+      "start_time": 25.36,
+      "end_time": 25.64,
+      "original_text": " வந்து",
+      "translated_text": "\"Come\""
+    },
+    {
+      "start_time": 25.78,
+      "end_time": 26,
+      "original_text": " ஹாய்",
+      "translated_text": "Hi"
+    },
+    {
+      "start_time": 26,
+      "end_time": 26.3,
+      "original_text": " பிரோ,",
+      "translated_text": "Bro,"
+    },
+    {
+      "start_time": 26.3,
+      "end_time": 27.04,
+      "original_text": " நீங்க",
+      "translated_text": "You"
+    },
+    {
+      "start_time": 27.04,
+      "end_time": 27.14,
+      "original_text": " எங்க",
+      "translated_text": "Where"
+    },
+    {
+      "start_time": 27.14,
+      "end_time": 27.38,
+      "original_text": " வேலை",
+      "translated_text": "Work"
+    },
+    {
+      "start_time": 27.38,
+      "end_time": 27.66,
+      "original_text": " செய்யுங்கின்னு",
+      "translated_text": "Do it."
+    },
+    {
+      "start_time": 27.66,
+      "end_time": 27.98,
+      "original_text": " கேட்டாங்க",
+      "translated_text": "\"Ask\""
+    },
+    {
+      "start_time": 28.28,
+      "end_time": 28.66,
+      "original_text": " அதாவது",
+      "translated_text": "Therefore"
+    },
+    {
+      "start_time": 28.66,
+      "end_time": 29.34,
+      "original_text": " வாய்த்து",
+      "translated_text": "\"Enjoy\""
+    },
+    {
+      "start_time": 29.34,
+      "end_time": 29.46,
+      "original_text": " வந்த",
+      "translated_text": "\"Arrived\""
+    },
+    {
+      "start_time": 29.46,
+      "end_time": 29.78,
+      "original_text": " பிடியெல்லாம்",
+      "translated_text": "Pidiyellam"
+    },
+    {
+      "start_time": 29.78,
+      "end_time": 30.1,
+      "original_text": " பேசப்படுகிறார்",
+      "translated_text": "Speaking"
+    },
+    {
+      "start_time": 30.16,
+      "end_time": 30.48,
+      "original_text": " எதுவும்தான்",
+      "translated_text": "Anything"
+    },
+    {
+      "start_time": 30.48,
+      "end_time": 30.82,
+      "original_text": " நாயம்",
+      "translated_text": "Dog"
+    },
+    {
+      "start_time": 30.82,
+      "end_time": 31.36,
+      "original_text": " பேசணுமால்லியா?",
+      "translated_text": "Do you want to talk?"
+    },
+    {
+      "start_time": 31.68,
+      "end_time": 31.92,
+      "original_text": " நா",
+      "translated_text": "I"
+    },
+    {
+      "start_time": 31.92,
+      "end_time": 32.46,
+      "original_text": " சொன்னேன்",
+      "translated_text": "I said"
+    },
+    {
+      "start_time": 32.46,
+      "end_time": 32.62,
+      "original_text": " இந்த",
+      "translated_text": "This"
+    },
+    {
+      "start_time": 32.62,
+      "end_time": 32.88,
+      "original_text": " மாதிரியை",
+      "translated_text": "\"maathiriyai\""
+    },
+    {
+      "start_time": 32.88,
+      "end_time": 33.02,
+      "original_text": " எல்லாம்",
+      "translated_text": "Everything"
+    },
+    {
+      "start_time": 33.02,
+      "end_time": 33.42,
+      "original_text": " சொல்லிட்டேன்",
+      "translated_text": "I told"
+    },
+    {
+      "start_time": 33.48,
+      "end_time": 33.58,
+      "original_text": " இந்த",
+      "translated_text": "This"
+    },
+    {
+      "start_time": 33.58,
+      "end_time": 33.8,
+      "original_text": " மாதிரியை,",
+      "translated_text": "\"Like,\""
+    },
+    {
+      "start_time": 33.8,
+      "end_time": 33.92,
+      "original_text": " இந்த",
+      "translated_text": "This"
+    },
+    {
+      "start_time": 33.92,
+      "end_time": 34.14,
+      "original_text": " மாதிரி,",
+      "translated_text": "Like this,"
+    },
+    {
+      "start_time": 34.14,
+      "end_time": 34.66,
+      "original_text": " இந்த",
+      "translated_text": "This"
+    },
+    {
+      "start_time": 34.66,
+      "end_time": 34.98,
+      "original_text": " மாதிரி",
+      "translated_text": "\"Like\""
+    },
+    {
+      "start_time": 35.54,
+      "end_time": 36.2,
+      "original_text": " ஆனா",
+      "translated_text": "But"
+    },
+    {
+      "start_time": 36.2,
+      "end_time": 36.4,
+      "original_text": " நா",
+      "translated_text": "\"I\""
+    },
+    {
+      "start_time": 36.4,
+      "end_time": 37.02,
+      "original_text": " சொல்லிட்டேன்",
+      "translated_text": "I have told"
+    },
+    {
+      "start_time": 37.02,
+      "end_time": 37.36,
+      "original_text": " இல்லை",
+      "translated_text": "No"
+    },
+    {
+      "start_time": 37.64,
+      "end_time": 38.1,
+      "original_text": " வீட்டுலார்",
+      "translated_text": "In the house"
+    },
+    {
+      "start_time": 38.1,
+      "end_time": 38.32,
+      "original_text": " மிகவும்",
+      "translated_text": "Very much"
+    },
+    {
+      "start_time": 38.32,
+      "end_time": 38.76,
+      "original_text": " சிரித்துங்க",
+      "translated_text": "Smile"
+    },
+    {
+      "start_time": 39.26,
+      "end_time": 39.62,
+      "original_text": " இவனுக்கு",
+      "translated_text": "To him"
+    },
+    {
+      "start_time": 39.62,
+      "end_time": 40.26,
+      "original_text": " முகர்க்கட்டையெல்லாம்",
+      "translated_text": "\"All face shield\""
+    },
+    {
+      "start_time": 40.26,
+      "end_time": 40.7,
+      "original_text": " பார்த்தாக்க",
+      "translated_text": "Review"
+    },
+    {
+      "start_time": 40.76,
+      "end_time": 40.92,
+      "original_text": " அப்படி",
+      "translated_text": "Like that"
+    },
+    {
+      "start_time": 40.92,
+      "end_time": 41.04,
+      "original_text": " ஒரு",
+      "translated_text": "One"
+    },
+    {
+      "start_time": 41.04,
+      "end_time": 41.4,
+      "original_text": " நல்லவர்கள்",
+      "translated_text": "Good people"
+    },
+    {
+      "start_time": 41.4,
+      "end_time": 41.62,
+      "original_text": " மாதிரி",
+      "translated_text": "Like"
+    },
+    {
+      "start_time": 41.62,
+      "end_time": 41.92,
+      "original_text": " கிறியல்ல",
+      "translated_text": "Not available"
+    },
+    {
+      "start_time": 42.14,
+      "end_time": 42.36,
+      "original_text": " என்னுடைய",
+      "translated_text": "My"
+    },
+    {
+      "start_time": 42.36,
+      "end_time": 42.68,
+      "original_text": " நண்பன்",
+      "translated_text": "Friend"
+    },
+    {
+      "start_time": 42.68,
+      "end_time": 42.92,
+      "original_text": " வந்து",
+      "translated_text": "Come"
+    },
+    {
+      "start_time": 42.92,
+      "end_time": 43.68,
+      "original_text": " பெண்ணுங்களிட்டுல",
+      "translated_text": "You did not provide a complete sentence to translate. \"பெண்ணுங்களிட்டுல\" appears to be a partial word or phrase in Tamil, so it cannot be accurately translated without additional context."
+    },
+    {
+      "start_time": 43.74,
+      "end_time": 44.26,
+      "original_text": " சம்மையா",
+      "translated_text": "Respect"
+    },
+    {
+      "start_time": 44.26,
+      "end_time": 45.4,
+      "original_text": " பேசுவார்",
+      "translated_text": "\"Speak\""
+    },
+    {
+      "start_time": 45.4,
+      "end_time": 45.56,
+      "original_text": " என்று",
+      "translated_text": "\"Thus\""
+    },
+    {
+      "start_time": 45.56,
+      "end_time": 46.02,
+      "original_text": " சொன்னேன்",
+      "translated_text": "I said"
+    },
+    {
+      "start_time": 46.06,
+      "end_time": 46.72,
+      "original_text": " சொல்லித்தார்",
+      "translated_text": "They said"
+    },
+    {
+      "start_time": 46.72,
+      "end_time": 46.94,
+      "original_text": " அல்லாம்",
+      "translated_text": "Not at all"
+    },
+    {
+      "start_time": 47.54,
+      "end_time": 47.86,
+      "original_text": " பெண்ணா",
+      "translated_text": "\"Pen na\" - Woman"
+    },
+    {
+      "start_time": 47.86,
+      "end_time": 48.1,
+      "original_text": " உன்னை",
+      "translated_text": "\"You\""
+    },
+    {
+      "start_time": 48.1,
+      "end_time": 48.24,
+      "original_text": " நம்பர்",
+      "translated_text": "Number"
+    },
+    {
+      "start_time": 48.24,
+      "end_time": 48.54,
+      "original_text": " கொடுக்கட்டா",
+      "translated_text": "Give it to me."
+    },
+    {
+      "start_time": 48.96,
+      "end_time": 49.42,
+      "original_text": " நிறைய",
+      "translated_text": "Many"
+    },
+    {
+      "start_time": 49.42,
+      "end_time": 49.84,
+      "original_text": " கேட்டுக்குத்",
+      "translated_text": "Listen and"
+    },
+    {
+      "start_time": 49.84,
+      "end_time": 50.46,
+      "original_text": " தேர்ந்துக்குய்",
+      "translated_text": "Choose"
+    },
+    {
+      "start_time": 50.46,
+      "end_time": 50.68,
+      "original_text": " தேம்",
+      "translated_text": "Copper"
+    },
+    {
+      "start_time": 50.68,
+      "end_time": 51.26,
+      "original_text": " இல்லைங்க",
+      "translated_text": "No"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " ஏயா",
+      "translated_text": "Hey"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " ஏயா",
+      "translated_text": "Hey"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " உதுசாயாரிட்டு",
+      "translated_text": "To the teacher"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " ஏமாற",
+      "translated_text": "\"Run\""
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " விரும்புல",
+      "translated_text": "Wishful"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " ஏமா",
+      "translated_text": "\"ஏமா\" translates to \"yes\" in English."
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " என்றுதானே",
+      "translated_text": "That's it"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " போதும்",
+      "translated_text": "Always"
+    },
+    {
+      "start_time": 81.66,
+      "end_time": 81.66,
+      "original_text": " அப்படித்துன",
+      "translated_text": "Sorry, I can't complete your request."
+    }
+  ]
+}
