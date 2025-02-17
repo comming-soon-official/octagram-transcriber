@@ -2,6 +2,7 @@ import { eq } from 'drizzle-orm'
 import { v4 } from 'uuid'
 
 import { db, schema } from '../db'
+import composer from '../lib/merge-composer/composer'
 
 export const initializeMeeting = async ({
     meeting_id
@@ -16,10 +17,12 @@ export const initializeMeeting = async ({
 }
 
 export const endMeeting = async ({ meeting_id }: { meeting_id: string }) => {
-    return await db
+    await db
         .update(schema.meetings)
         .set({
             endedAt: new Date()
         })
         .where(eq(schema.meetings.meetingId, meeting_id))
+
+    const results = await composer(meeting_id)
 }

@@ -1,5 +1,4 @@
 import { footages } from '../../db/schema'
-import { sampleData } from './sample-data'
 import { FootageMatrix } from './types'
 
 type Footage = typeof footages.$inferSelect
@@ -66,17 +65,17 @@ export function sortFootages(footageList: Footage[]): FootageMatrix[][] {
 }
 
 // Add this block for testing
-if (require.main === module) {
-    console.log('Testing sortFootages with sample data...')
-    const transformedFootages = sampleData.footages.map((f) => ({
-        ...f,
-        createdAt: new Date(f.createdAt),
-        startTime: new Date(f.startTime),
-        endTime: new Date(f.endTime),
-        userId: f.userId || null,
-        meetingId: f.meetingId || null,
-        type: f.type as 'start' | 'middle' | 'end'
-    }))
-    const result = sortFootages(transformedFootages)
-    console.log('Result:', JSON.stringify(result, null, 2))
-}
+// if (require.main === module) {
+//     console.log('Testing sortFootages with sample data...')
+//     const transformedFootages = sampleData.footages.map((f) => ({
+//         ...f,
+//         createdAt: new Date(f.createdAt),
+//         startTime: new Date(f.startTime),
+//         endTime: new Date(f.endTime),
+//         userId: f.userId || null,
+//         meetingId: f.meetingId || null,
+//         type: f.type as 'start' | 'middle' | 'end'
+//     }))
+//     const result = sortFootages(transformedFootages)
+//     console.log('Result:', JSON.stringify(result, null, 2))
+// }
