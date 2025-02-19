@@ -131,7 +131,8 @@ router.get(
             )
             const filePaths = mergedResults.map((res) => res.jsonResult)
             const summary = await summarizer(filePaths)
-            db.update(meetings)
+            await db
+                .update(meetings)
                 .set({
                     transcriberOutput: summary
                 })

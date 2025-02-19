@@ -74,6 +74,7 @@ export default function Dashboard() {
                                 <TableHead>Created At</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead>Actions</TableHead>
+                                <TableHead>Transcriber</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -109,6 +110,9 @@ export default function Dashboard() {
                                                 ? 'Transcribed'
                                                 : 'Transcribe'}
                                         </Button>
+                                    </TableCell>
+                                    <TableCell className="prose">
+                                        {meeting.transcriberOutput}
                                     </TableCell>
                                 </TableRow>
                             ))}
