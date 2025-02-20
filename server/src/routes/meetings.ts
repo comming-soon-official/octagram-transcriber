@@ -62,44 +62,47 @@ router.get(
             const mergedResults = await Promise.all(
                 userIds.map(async (userId) => {
                     try {
-                        const { mergedFilePath, startTime, endTime } =
-                            await mergeComposerFromDB(meeting_id, userId)
-                        console.log(
-                            `[${new Date().toISOString()}] MERGE AUDIO - Merged audio for user`,
-                            {
-                                meeting_id,
-                                userId,
-                                mergedFilePath,
-                                startTime,
-                                endTime
-                            }
+                        // Get merged results for all sequences for this user
+                        const mergedSequences = await mergeComposerFromDB(
+                            meeting_id,
+                            userId
                         )
-                        const result = await transcribeFile(mergedFilePath)
-                        if ('jsonPath' in result) {
-                            await db.insert(merged_footages).values({
-                                id: v4(),
-                                createdAt: new Date(),
-                                startedAt: startTime,
-                                endedAt: endTime,
-                                users: userId,
-                                meetingId: meeting_id,
-                                transcribeUrl: result.jsonPath // updated to store jsonPath properly
+                        const processedResults = await Promise.all(
+                            mergedSequences.map(async (seq) => {
+                                const result = await transcribeFile(
+                                    seq.mergedFilePath
+                                )
+                                if ('jsonPath' in result) {
+                                    await db.insert(merged_footages).values({
+                                        id: v4(),
+                                        createdAt: new Date(),
+                                        startedAt: seq.startTime,
+                                        endedAt: seq.endTime,
+                                        users: userId,
+                                        meetingId: meeting_id,
+                                        transcribeUrl: result.jsonPath
+                                    })
+                                    return {
+                                        mergedFilePath: seq.mergedFilePath,
+                                        jsonResult: result.jsonPath,
+                                        startTime: seq.startTime,
+                                        endTime: seq.endTime
+                                    }
+                                } else {
+                                    throw new Error(
+                                        'Transcription failed: ' + result.error
+                                    )
+                                }
                             })
-                        } else {
-                            throw new Error(
-                                'Transcription failed: ' + result.error
-                            )
-                        }
-
+                        )
                         console.log(
-                            `[${new Date().toISOString()}] MERGE AUDIO - Inserted merged record to DB successfully`,
+                            `[${new Date().toISOString()}] MERGE AUDIO - Processed all sequences for user`,
                             { meeting_id, userId }
                         )
                         return {
                             userId,
                             success: true,
-                            mergedFilePath,
-                            jsonResult: result.jsonPath
+                            results: processedResults
                         }
                     } catch (error) {
                         console.error(
@@ -129,7 +132,10 @@ router.get(
                 `[${new Date().toISOString()}] MERGE AUDIO - Completed merging process`,
                 { meeting_id, usersProcessed: userIds.length }
             )
-            const filePaths = mergedResults.map((res) => res.jsonResult)
+            // Flatten all jsonResult file paths for summarization
+            const filePaths = mergedResults
+                .filter((r) => r.success)
+                .flatMap((r) => r.results?.map((r: any) => r.jsonResult) ?? [])
             const summary = await summarizer(filePaths)
             await db
                 .update(meetings)

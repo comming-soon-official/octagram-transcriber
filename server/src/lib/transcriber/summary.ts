@@ -79,6 +79,8 @@ async function summarizeWithOpenAI(
 }
 
 export async function summarizer(filesPaths: any) {
+    console.log(filesPaths)
+
     // if (Array(filesPaths)) return
 
     try {

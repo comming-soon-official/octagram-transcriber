@@ -21,7 +21,7 @@ async function getAudioChunksFromDB(meetId: string, userId: string) {
 export async function mergeComposerFromDB(
     meetId: string,
     userId: string
-): Promise<{ mergedFilePath: string; startTime: Date; endTime: Date }> {
+): Promise<{ mergedFilePath: string; startTime: Date; endTime: Date }[]> {
     const chunks = await getAudioChunksFromDB(meetId, userId)
     if (chunks.length === 0) {
         throw new Error(
@@ -31,17 +31,17 @@ export async function mergeComposerFromDB(
 
     // Sort footages into matrix
     const matrix = sortFootages(chunks)
-
-    // Extract startTime from first "start" chunk and endTime from last "end" chunk
-    const startTime = matrix[0][0].startTime
-    const lastSequence = matrix[matrix.length - 1]
-    const endTime = lastSequence[lastSequence.length - 1].endTime
+    console.log(matrix)
 
     try {
-        // Process the audio matrix and get the result
         const outputFiles = await processAudioMatrix(matrix)
-        const mergedFilePath = outputFiles[0]
-        return { mergedFilePath, startTime, endTime }
+        // Map each sequence to its own merged file and time range
+        const mergedResults = matrix.map((sequence, index) => ({
+            mergedFilePath: outputFiles[index],
+            startTime: sequence[0].startTime,
+            endTime: sequence[sequence.length - 1].endTime
+        }))
+        return mergedResults
     } catch (error) {
         throw new Error(`Failed to process audio matrix: ${error}`)
     }

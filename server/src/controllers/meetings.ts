@@ -8,6 +8,15 @@ export const initializeMeeting = async ({
 }: {
     meeting_id: string
 }) => {
+    // Check if meeting exists
+    const existing = await db
+        .select()
+        .from(schema.meetings)
+        .where(eq(schema.meetings.meetingId, meeting_id))
+    if (existing.length > 0) {
+        return existing[0]
+    }
+    // Insert new meeting as it does not exist
     return await db.insert(schema.meetings).values({
         id: v4(),
         createdAt: new Date(),

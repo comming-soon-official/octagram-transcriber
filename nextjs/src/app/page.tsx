@@ -95,7 +95,6 @@ export default function Dashboard() {
                                             size="sm"
                                             disabled={
                                                 loading ||
-                                                !meeting.endedAt ||
                                                 Boolean(
                                                     meeting.transcriberOutput
                                                 )
