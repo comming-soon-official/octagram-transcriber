@@ -1,4 +1,5 @@
 import { CalendarIcon, ClockIcon } from 'lucide-react'
+import Link from 'next/link'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -14,7 +15,7 @@ interface MeetingCardProps {
     title: string
     date: string
     time: string
-    onStartTranscription: (id: string) => void
+    meetingId: string
 }
 
 export function MeetingCard({
@@ -22,7 +23,7 @@ export function MeetingCard({
     title,
     date,
     time,
-    onStartTranscription
+    meetingId
 }: MeetingCardProps) {
     return (
         <Card className="w-full">
@@ -40,9 +41,9 @@ export function MeetingCard({
                 </div>
             </CardContent>
             <CardFooter>
-                <Button onClick={() => onStartTranscription(id)}>
-                    Start Transcription
-                </Button>
+                <Link href={`/transcribe/${meetingId}`}>
+                    <Button>View Details</Button>
+                </Link>
             </CardFooter>
         </Card>
     )

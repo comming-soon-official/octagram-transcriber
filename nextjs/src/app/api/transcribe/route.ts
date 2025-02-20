@@ -5,7 +5,6 @@ export async function POST(request: Request) {
     const id = searchParams.get('id')
 
     // Simulate a delay for transcription process
-    await new Promise((resolve) => setTimeout(resolve, 2000))
 
     const transcription = `
     Meeting Transcription for Meeting ID: ${id}

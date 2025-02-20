@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useState } from 'react'
 
 import { MeetingCard } from '@/components/internal/meeting-card'
@@ -19,37 +20,14 @@ export default function Home() {
         (typeof meetings)[0] | null
     >(null)
 
-    const startTranscription = async (id: string) => {
-        setIsTranscribing(true)
-        const meeting = meetings.find((m) => m.id === id)
-        if (!meeting) return
-
-        setCurrentMeeting(meeting)
-
-        try {
-            const response = await fetch(`/api/transcribe?id=${id}`, {
-                method: 'POST'
-            })
-            const data = await response.json()
-            setTranscription(data.transcription)
-            setShowModal(true)
-        } catch (error) {
-            console.error('Error starting transcription:', error)
-        } finally {
-            setIsTranscribing(false)
-        }
-    }
-
     return (
         <main className="container mx-auto py-8">
             <h1 className="text-3xl font-bold mb-8">Transcriber App</h1>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {meetings.map((meeting) => (
-                    <MeetingCard
-                        key={meeting.id}
-                        {...meeting}
-                        onStartTranscription={startTranscription}
-                    />
+                    <div key={meeting.id} className="flex flex-col gap-2">
+                        <MeetingCard {...meeting} meetingId={meeting.id} />
+                    </div>
                 ))}
             </div>
             {currentMeeting && (
