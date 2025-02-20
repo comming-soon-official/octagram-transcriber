@@ -21,7 +21,14 @@ async function getAudioChunksFromDB(meetId: string, userId: string) {
 export async function mergeComposerFromDB(
     meetId: string,
     userId: string
-): Promise<{ mergedFilePath: string; startTime: Date; endTime: Date }[]> {
+): Promise<
+    {
+        mergedFilePath: string
+        startTime: Date
+        endTime: Date
+        username: string
+    }[]
+> {
     const chunks = await getAudioChunksFromDB(meetId, userId)
     if (chunks.length === 0) {
         throw new Error(
@@ -35,11 +42,12 @@ export async function mergeComposerFromDB(
 
     try {
         const outputFiles = await processAudioMatrix(matrix)
-        // Map each sequence to its own merged file and time range
+        // Map each sequence to its own merged file, time range, and username from the first chunk
         const mergedResults = matrix.map((sequence, index) => ({
             mergedFilePath: outputFiles[index],
             startTime: sequence[0].startTime,
-            endTime: sequence[sequence.length - 1].endTime
+            endTime: sequence[sequence.length - 1].endTime,
+            username: sequence[0].username ?? 'Unknown'
         }))
         return mergedResults
     } catch (error) {

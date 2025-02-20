@@ -4,15 +4,15 @@ import path from 'path'
 
 import { FootageMatrix } from './types'
 
-const TMP_DIR = path.join(process.cwd(), 'tmp')
+const MERGED_DIR = path.join(process.cwd(), 'uploads', 'merged')
 
-async function ensureTmpDir() {
-    await fs.mkdir(TMP_DIR, { recursive: true })
+async function ensureUploadMergedDir() {
+    await fs.mkdir(MERGED_DIR, { recursive: true })
 }
 
 async function removeSilence(inputFile: string): Promise<string> {
     const outputFile = path.join(
-        TMP_DIR,
+        MERGED_DIR,
         `nosilence_${Date.now()}_${path.basename(inputFile)}`
     )
 
@@ -28,7 +28,7 @@ async function removeSilence(inputFile: string): Promise<string> {
 }
 
 async function mergeAudioSequence(files: string[]): Promise<string> {
-    const outputFile = path.join(TMP_DIR, `merged_${Date.now()}.wav`)
+    const outputFile = path.join(MERGED_DIR, `merged_${Date.now()}.wav`)
     const command = ffmpeg()
 
     files.forEach((file) => {
@@ -37,7 +37,7 @@ async function mergeAudioSequence(files: string[]): Promise<string> {
 
     return new Promise((resolve, reject) => {
         command
-            .mergeToFile(outputFile, TMP_DIR)
+            .mergeToFile(outputFile, MERGED_DIR)
             .on('end', () => resolve(outputFile))
             .on('error', reject)
     })
@@ -56,7 +56,7 @@ async function processSequence(sequence: FootageMatrix[]): Promise<string> {
 export async function processAudioMatrix(
     matrix: FootageMatrix[][]
 ): Promise<string[]> {
-    await ensureTmpDir()
+    await ensureUploadMergedDir()
 
     try {
         // Process each sequence in parallel

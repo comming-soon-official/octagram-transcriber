@@ -9,6 +9,7 @@ type addFootageTypes = {
     meeting_id: string
     startTime: string
     endTime: string
+    username: string
     file: Buffer
     chunkType: 'start' | 'middle' | 'end'
 }
@@ -17,6 +18,7 @@ export const addFootage = async ({
     meeting_id,
     startTime,
     endTime,
+    username,
     file,
     chunkType
 }: addFootageTypes) => {
@@ -27,6 +29,7 @@ export const addFootage = async ({
         meeting_id,
         startTime,
         endTime,
+        username,
         file,
         chunkType
     })
@@ -39,6 +42,7 @@ export const addFootage = async ({
         userId: user_id,
         startTime: new Date(startTime),
         endTime: new Date(endTime),
+        username: username,
         chunkType
     }
     console.log('📝 Preparing to insert footage data:', footageData)

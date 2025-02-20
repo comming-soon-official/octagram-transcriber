@@ -120,9 +120,11 @@ interface TranscribeFileFailure {
     error: string
 }
 
+// Updated transcribeFile to accept a username parameter
 export async function transcribeFile(
     inputFilePath: string,
-    segmentDuration: number = 10
+    segmentDuration: number = 10,
+    username?: string
 ): Promise<TranscribeFileSuccess | TranscribeFileFailure> {
     try {
         const tempDir = await splitAudio(inputFilePath, segmentDuration)
@@ -177,9 +179,21 @@ export async function transcribeFile(
 
         fs.writeFileSync(jsonPath, JSON.stringify(jsonOutput, null, 2))
 
+        // Read generated transcription JSON and inject username into each segment
+        try {
+            const transcriptData = fs.readFileSync(jsonPath, 'utf8')
+            const transcript = JSON.parse(transcriptData)
+            transcript.segments = transcript.segments.map((seg: any) => ({
+                ...seg,
+                username: username || seg.username
+            }))
+            fs.writeFileSync(jsonPath, JSON.stringify(transcript, null, 2))
+        } catch (error) {
+            console.error('Error adding username to transcript:', error)
+        }
+
         return {
             success: true,
-
             jsonPath,
             data: jsonOutput
         }

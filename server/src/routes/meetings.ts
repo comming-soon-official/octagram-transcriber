@@ -69,8 +69,11 @@ router.get(
                         )
                         const processedResults = await Promise.all(
                             mergedSequences.map(async (seq) => {
+                                // Pass the username to transcribeFile
                                 const result = await transcribeFile(
-                                    seq.mergedFilePath
+                                    seq.mergedFilePath,
+                                    10,
+                                    seq.username
                                 )
                                 if ('jsonPath' in result) {
                                     await db.insert(merged_footages).values({
@@ -79,6 +82,7 @@ router.get(
                                         startedAt: seq.startTime,
                                         endedAt: seq.endTime,
                                         users: userId,
+                                        username: seq.username, // new field with username
                                         meetingId: meeting_id,
                                         transcribeUrl: result.jsonPath
                                     })
@@ -86,7 +90,8 @@ router.get(
                                         mergedFilePath: seq.mergedFilePath,
                                         jsonResult: result.jsonPath,
                                         startTime: seq.startTime,
-                                        endTime: seq.endTime
+                                        endTime: seq.endTime,
+                                        username: seq.username // passed along for consistency
                                     }
                                 } else {
                                     throw new Error(

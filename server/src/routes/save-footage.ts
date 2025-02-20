@@ -19,19 +19,27 @@ router.post(
                 return
             }
 
-            const { user_id, meeting_id, startTime, endTime, chunkType } =
-                req.body
+            const {
+                user_id,
+                meeting_id,
+                startTime,
+                endTime,
+                chunkType,
+                username
+            } = req.body
             console.log('📋 Request payload:', {
                 user_id,
                 meeting_id,
                 startTime,
                 endTime,
-                chunkType
+                chunkType,
+                username
             })
 
             await addFootage({
                 user_id,
                 meeting_id,
+                username,
                 startTime,
                 endTime,
                 file: req.file.buffer,

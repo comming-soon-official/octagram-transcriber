@@ -26,9 +26,10 @@ function readTranscript(filePath: string): TranscriptEntry[] {
         const data = JSON.parse(fileContent)
         // Parse segments from sample JSON structure
         return data.segments.map((seg: any) => {
-            // Extract speaker by matching "user <number>"
+            // Use seg.username if provided; fallback to extracting "user <number>"
             const match = seg.text.match(/user\s*(\d+)/i)
-            const speaker = match ? `User ${match[1]}` : 'Unknown'
+            const speaker =
+                seg.username || (match ? `User ${match[1]}` : 'Unknown')
             return {
                 speaker,
                 text: seg.text,

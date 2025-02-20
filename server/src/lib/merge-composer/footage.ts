@@ -35,7 +35,8 @@ export function sortFootages(footageList: Footage[]): FootageMatrix[][] {
             chunkType: footage.chunkType as 'start' | 'middle' | 'end',
             startTime: footage.startTime,
             endTime: footage.endTime,
-            filepath: footage.file ?? ''
+            filepath: footage.file ?? '',
+            username: footage.username ?? undefined // convert null to undefined
         }
 
         if (footage.chunkType === 'start') {
