@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import express, { Request, Response } from 'express'
 import { v4 } from 'uuid'
 
@@ -21,6 +21,22 @@ router.post('/api/end-meeting', async (req: Request, res: Response) => {
     const { meeting_id } = req.body
     await endMeeting({ meeting_id })
     res.send({ success: true })
+})
+
+router.post('/api/get-transcript', async (req: Request, res: Response) => {
+    // Retrieve meeting_id from request body
+
+    const { meeting_id } = req.body
+    console.log(meeting_id)
+
+    // Query merged_footages by meeting_id sorted from new to old based on createdAt
+    const footageRecords = await db
+        .select()
+        .from(merged_footages)
+        .where(eq(merged_footages.meetingId, meeting_id))
+        .orderBy(desc(merged_footages.createdAt))
+    // Send result as response
+    res.send({ success: true, footages: footageRecords })
 })
 
 router.get(

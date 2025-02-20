@@ -4,72 +4,213 @@ import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 
-// Shared static meetings data (could be replaced with actual data fetching)
-const meetings = [
-    { id: '1', title: 'Team Standup', date: '2025-02-21', time: '09:00 AM' },
-    { id: '2', title: 'Project Review', date: '2025-02-22', time: '02:00 PM' },
-    { id: '3', title: 'Client Meeting', date: '2025-02-23', time: '11:00 AM' }
-]
+import { MeetingCard } from '@/components/internal/meeting-card'
+import TooltipWrapper from '@/components/internal/tooltipwrapper'
+import { Button } from '@/components/ui/button'
+import { useUniversalStore } from '@/store/useUniversalStore'
 
 export default function MeetingDetails() {
     const { id } = useParams() as { id: string }
-    const meeting = meetings.find((m) => m.id === id)
+    const { meetings, selectedMeetingId } = useUniversalStore()
+    const effectiveId = selectedMeetingId || id
+    const meeting = meetings.find((m) => m.id === effectiveId)
 
     const [isTranscribing, setIsTranscribing] = useState(false)
     const [transcription, setTranscription] = useState('')
+    const [transcriptData, setTranscriptData] = useState<
+        {
+            transcript: Transcript
+            username: string
+        }[]
+    >([])
 
-    const startTranscription = async () => {
+    const handleTranscribe = async () => {
         if (!meeting) return
         setIsTranscribing(true)
         try {
-            const response = await fetch(`/api/transcribe?id=${id}`, {
-                method: 'POST'
-            })
+            const response = await fetch(
+                `/api/merge-audio/${meeting.meetingId}`
+            )
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`)
+            }
             const data = await response.json()
             setTranscription(data.transcription)
         } catch (error) {
-            console.error('Error starting transcription:', error)
+            console.error('Transcription error:', error)
         } finally {
             setIsTranscribing(false)
         }
     }
 
+    const fetchTranscript = async () => {
+        if (!meeting) return
+        try {
+            const response = await fetch(
+                'http://localhost:8000/api/get-transcript',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ meeting_id: meeting.meetingId })
+                }
+            )
+            const data = await response.json()
+            console.log(data)
+
+            const transcriptArray = data.footages.map((items: any) => ({
+                transcript: JSON.parse(items.transcription) as Transcript,
+                username: items.username
+            }))
+            console.log(transcriptArray)
+
+            setTranscriptData(transcriptArray)
+        } catch (error) {
+            console.error('Error fetching transcript:', error)
+        }
+    }
+
+    // Compute the actual transcription from stored output or state
+    const displayTranscription = meeting?.transcriberOutput || transcription
+
     if (!meeting) {
         return (
-            <main className="container mx-auto py-8">
-                <p>Meeting not found</p>
+            <div className="flex flex-col items-center justify-center min-h-[50vh]">
+                <p className="text-xl font-medium text-gray-600 mb-4">
+                    Meeting not found
+                </p>
                 <Link href="/transcribe">
-                    <button className="mt-4 px-4 py-2 bg-gray-500 text-white rounded">
-                        Back
-                    </button>
+                    <Button variant="default">Back to Meetings</Button>
                 </Link>
-            </main>
+            </div>
         )
     }
 
     return (
-        <main className="container mx-auto py-8">
-            <div className="border rounded p-4 mb-4">
-                <h1 className="text-2xl font-bold">{meeting.title}</h1>
-                <p>Date: {meeting.date}</p>
-                <p>Time: {meeting.time}</p>
+        <main className="max-w-7xl mx-auto px-4 py-8">
+            <MeetingCard
+                id={meeting.id}
+                meetingId={meeting.meetingId}
+                title={`Meeting ${meeting.meetingId}`}
+                date={new Date(meeting.createdAt).toLocaleDateString()}
+                time={new Date(meeting.createdAt).toLocaleTimeString()}
+                // transcribed={meeting.transcriberOutput ?? ''}
+            />
+
+            <div className="flex gap-4 mt-6">
+                <Button
+                    onClick={handleTranscribe}
+                    disabled={isTranscribing || Boolean(displayTranscription)}
+                    variant="default"
+                >
+                    {isTranscribing
+                        ? 'Transcribing...'
+                        : 'Transcribe (Merge Audio)'}
+                </Button>
+                <Button
+                    disabled={Boolean(transcriptData[0]?.username)}
+                    onClick={fetchTranscript}
+                >
+                    Load Transcript Footages
+                </Button>
             </div>
-            <button
-                onClick={startTranscription}
-                disabled={isTranscribing}
-                className="mb-4 px-4 py-2 bg-green-500 text-white rounded"
-            >
-                {isTranscribing ? 'Transcribing...' : 'Start Transcription'}
-            </button>
-            {transcription && (
-                <div className="border-t pt-4">
-                    <h2 className="text-xl font-semibold mb-2">
+
+            {displayTranscription && (
+                <div className="mt-8 p-6 bg-white rounded-lg shadow-sm">
+                    <h2 className="text-xl font-semibold mb-4">
                         Transcription
                     </h2>
-                    <p>{transcription}</p>
+                    <p className="text-gray-700">{displayTranscription}</p>
                 </div>
             )}
-            {/* ...existing code... */}
+
+            {transcriptData.length > 0 && (
+                <div className="mt-8">
+                    {transcriptData.map((transcriptItem, index) => (
+                        <div
+                            key={index}
+                            className="bg-white rounded-lg shadow-sm p-6 mb-4"
+                        >
+                            <div className="text-xl font-semibold mb-4">
+                                Breakdown
+                            </div>
+                            <div className="mb-4">
+                                <h3 className="text-lg font-semibold">
+                                    {transcriptItem.username}
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                    {
+                                        transcriptItem.transcript?.metadata
+                                            .transcriptionDate
+                                    }{' '}
+                                    •{' '}
+                                    {
+                                        transcriptItem.transcript?.metadata
+                                            .segmentCount
+                                    }{' '}
+                                    segments
+                                </p>
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                                {transcriptItem.transcript?.segments.map(
+                                    (segment, segIndex) => (
+                                        <TranscriptSegment
+                                            key={segIndex}
+                                            startTime={segment.startTime}
+                                            endTime={segment.endTime}
+                                            text={segment.text}
+                                        />
+                                    )
+                                )}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </main>
+    )
+}
+
+export interface TranscriptMetadata {
+    sourceFile: string
+    transcriptionDate: string
+    segmentCount: number
+}
+
+export interface TranscriptSegment {
+    index: number
+    startTime: string
+    endTime: string
+    text: string
+    username: string
+}
+
+export interface Transcript {
+    metadata: TranscriptMetadata
+    segments: TranscriptSegment[]
+}
+
+interface TranscriptSegmentProps {
+    startTime: string
+    endTime: string
+    text: string
+}
+
+export const TranscriptSegment = ({
+    startTime,
+    endTime,
+    text
+}: TranscriptSegmentProps) => {
+    const formatTime = (timeStr: string): string => timeStr.slice(-8)
+
+    return (
+        <div className="inline-block m-1">
+            <TooltipWrapper
+                content={`${formatTime(startTime)}-${formatTime(endTime)}`}
+            >
+                <span className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200">
+                    {text}
+                </span>
+            </TooltipWrapper>
+        </div>
     )
 }

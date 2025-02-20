@@ -16,6 +16,7 @@ interface MeetingCardProps {
     date: string
     time: string
     meetingId: string
+    transcribed?: string
 }
 
 export function MeetingCard({
@@ -23,12 +24,15 @@ export function MeetingCard({
     title,
     date,
     time,
-    meetingId
+    meetingId,
+    transcribed
 }: MeetingCardProps) {
     return (
         <Card className="w-full">
             <CardHeader>
-                <CardTitle>{title}</CardTitle>
+                <CardTitle className="line-clamp-2 font-semibold">
+                    {title}
+                </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="flex items-center space-x-2 text-sm text-muted-foreground">
@@ -40,10 +44,15 @@ export function MeetingCard({
                     <span>{time}</span>
                 </div>
             </CardContent>
-            <CardFooter>
+            <CardFooter className="flex justify-between">
                 <Link href={`/transcribe/${meetingId}`}>
                     <Button>View Details</Button>
                 </Link>
+                {transcribed && (
+                    <Button variant={transcribed ? 'outline' : 'default'}>
+                        {transcribed ? 'Transcribed' : 'Start Transcription'}
+                    </Button>
+                )}
             </CardFooter>
         </Card>
     )
