@@ -54,5 +54,6 @@ export const merged_footages = pgTable('merged_footages', {
     username: text('username'),
     users: text('user_id'),
     file: text('file_url'),
-    transcribeUrl: text('output')
+    transcribeUrl: text('output'),
+    transcription: text('transcription')
 })

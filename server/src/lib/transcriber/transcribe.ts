@@ -123,7 +123,7 @@ interface TranscribeFileFailure {
 // Updated transcribeFile to accept a username parameter
 export async function transcribeFile(
     inputFilePath: string,
-    segmentDuration: number = 10,
+    segmentDuration: number = 60,
     username?: string
 ): Promise<TranscribeFileSuccess | TranscribeFileFailure> {
     try {

@@ -72,7 +72,7 @@ router.get(
                                 // Pass the username to transcribeFile
                                 const result = await transcribeFile(
                                     seq.mergedFilePath,
-                                    10,
+                                    60,
                                     seq.username
                                 )
                                 if ('jsonPath' in result) {
@@ -84,7 +84,10 @@ router.get(
                                         users: userId,
                                         username: seq.username, // new field with username
                                         meetingId: meeting_id,
-                                        transcribeUrl: result.jsonPath
+                                        transcribeUrl: result.jsonPath,
+                                        transcription: JSON.stringify(
+                                            result.data
+                                        )
                                     })
                                     return {
                                         mergedFilePath: seq.mergedFilePath,
