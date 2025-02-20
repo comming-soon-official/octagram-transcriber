@@ -10,7 +10,7 @@ ENV OPENAI_KEY $OPENAI_KEY
 
 COPY /server/package*.json ./
 RUN npm install
-COPY  /server/ .
+COPY  /server .
 RUN npm run build
 
 
