@@ -33,6 +33,24 @@ export const footages = pgTable('footages', {
     meetingId: text('meeting_id'),
     startTime: timestamp('start_time'),
     endTime: timestamp('end_time'),
-    transcribed: text('transcribed_url'),
     chunkType: text('chunk_type')
+})
+
+export const merged_footages = pgTable('merged_footages', {
+    id: text('id').notNull().primaryKey(),
+    meetingId: text('meeting_id'),
+    createdAt: timestamp('created_at', {
+        withTimezone: false
+    })
+        .notNull()
+        .defaultNow(),
+    startedAt: timestamp('started_at', {
+        withTimezone: false
+    }),
+    endedAt: timestamp('ended_at', {
+        withTimezone: false
+    }),
+    users: text('user_id'),
+    file: text('file_url'),
+    transcribeUrl: text('output')
 })

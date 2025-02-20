@@ -1,18 +1,13 @@
-import { promises as fs } from 'fs'
-import { exec } from 'child_process'
+import { and, eq } from 'drizzle-orm'
 import path from 'path'
 
 import { db } from '../db'
 import { footages } from '../db/schema'
-import { and, eq } from 'drizzle-orm'
-import { sortFootages } from './merge-composer/footage'
 import { processAudioMatrix } from './merge-composer/audio-composer'
+import { sortFootages } from './merge-composer/footage'
 
 // Fetch audio chunks from the database for the given meetId and userId
-async function getAudioChunksFromDB(
-    meetId: string,
-    userId: string
-) {
+async function getAudioChunksFromDB(meetId: string, userId: string) {
     // Adjusted the query by adding explicit type annotation for the parameter 'chunk'
     const chunks = await db
         .select()
@@ -26,7 +21,7 @@ async function getAudioChunksFromDB(
 export async function mergeComposerFromDB(
     meetId: string,
     userId: string
-): Promise<string[]> {
+): Promise<{ mergedFilePath: string; startTime: Date; endTime: Date }[]> {
     const chunks = await getAudioChunksFromDB(meetId, userId)
     if (chunks.length === 0) {
         throw new Error(
@@ -36,11 +31,17 @@ export async function mergeComposerFromDB(
 
     // Sort footages into matrix
     const matrix = sortFootages(chunks)
+    console.log(matrix)
 
     try {
-        // Process the audio matrix and get the result
-        const outputFile = await processAudioMatrix(matrix)
-        return outputFile
+        const outputFiles = await processAudioMatrix(matrix)
+        // Map each sequence to its own merged file and time range
+        const mergedResults = matrix.map((sequence, index) => ({
+            mergedFilePath: outputFiles[index],
+            startTime: sequence[0].startTime,
+            endTime: sequence[sequence.length - 1].endTime
+        }))
+        return mergedResults
     } catch (error) {
         throw new Error(`Failed to process audio matrix: ${error}`)
     }

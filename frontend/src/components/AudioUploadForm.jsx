@@ -51,20 +51,61 @@ function AudioUploadForm() {
         [formData, setStatus]
     )
 
+    const startMeeting = async () => {
+        try {
+            const response = await fetch(
+                'http://localhost:8000/api/start-meeting',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ meeting_id: formData.meetingId })
+                }
+            )
+            if (!response.ok) throw new Error('Failed to start meeting')
+            setStatus('Meeting started')
+            startRecording()
+        } catch (error) {
+            setStatus(`Failed to start meeting: ${error.message}`)
+        }
+    }
+
+    const endMeeting = async () => {
+        try {
+            stopRecording()
+            const response = await fetch(
+                'http://localhost:8000/api/end-meeting',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ meeting_id: formData.meetingId })
+                }
+            )
+            if (!response.ok) throw new Error('Failed to end meeting')
+            setStatus('Meeting ended')
+        } catch (error) {
+            setStatus(`Failed to end meeting: ${error.message}`)
+        }
+    }
+
     const startRecording = useCallback(async () => {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({
                 audio: true
             })
             mediaRecorder.current = new MediaRecorder(stream, {
-                mimeType: 'audio/webm;codecs=opus'  // Specify codec explicitly
+                mimeType: 'audio/webm;codecs=opus' // Specify codec explicitly
             })
             chunksRef.current = []
             let isFirstChunk = true
             let chunkStartTime = new Date()
 
             mediaRecorder.current.ondataavailable = (e) => {
-                if (e.data.size > 0) {  // Only add non-empty chunks
+                if (e.data.size > 0) {
+                    // Only add non-empty chunks
                     chunksRef.current.push(e.data)
                 }
             }
@@ -75,22 +116,28 @@ function AudioUploadForm() {
                     mediaRecorder.current.state === 'recording'
                 ) {
                     mediaRecorder.current.stop()
-                    
+
                     // Wait for the data to be available
-                    await new Promise(resolve => {
+                    await new Promise((resolve) => {
                         mediaRecorder.current.onstop = async () => {
                             if (chunksRef.current.length > 0) {
                                 const audioBlob = new Blob(chunksRef.current, {
                                     type: 'audio/webm;codecs=opus'
                                 })
-                                const chunkType = isFirstChunk ? 'start' : 'middle'
-                                await sendAudioChunk(audioBlob, chunkStartTime, chunkType)
+                                const chunkType = isFirstChunk
+                                    ? 'start'
+                                    : 'middle'
+                                await sendAudioChunk(
+                                    audioBlob,
+                                    chunkStartTime,
+                                    chunkType
+                                )
                             }
-                            
+
                             chunksRef.current = []
                             chunkStartTime = new Date()
                             isFirstChunk = false
-                            
+
                             // Start recording the next chunk
                             if (isRecordingRef.current) {
                                 mediaRecorder.current.start()
@@ -166,12 +213,12 @@ function AudioUploadForm() {
 
                 <div>
                     {!isRecordingRef.current ? (
-                        <button type="button" onClick={startRecording}>
-                            Start Recording
+                        <button type="button" onClick={startMeeting}>
+                            Start Meeting
                         </button>
                     ) : (
-                        <button type="button" onClick={stopRecording}>
-                            Stop Recording
+                        <button type="button" onClick={endMeeting}>
+                            End Meeting
                         </button>
                     )}
                 </div>
