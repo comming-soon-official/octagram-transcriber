@@ -21,16 +21,14 @@ export function sortFootages(footageList: Footage[]): FootageMatrix[][] {
                 : new Date()
     }))
 
-    const sortedFootages = [...processedFootages].sort((a, b) =>
-        a.startTime && b.startTime
-            ? a.startTime.getTime() - b.startTime.getTime()
-            : 0
+    processedFootages.sort(
+        (a, b) => a.startTime.getTime() - b.startTime.getTime()
     )
 
     const matrix: FootageMatrix[][] = []
     let currentSequence: FootageMatrix[] = []
 
-    sortedFootages.forEach((footage) => {
+    processedFootages.forEach((footage) => {
         const footageItem = {
             chunkType: footage.chunkType as 'start' | 'middle' | 'end',
             startTime: footage.startTime,
