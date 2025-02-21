@@ -8,7 +8,8 @@ import {
     footages,
     meetings,
     merged_footages,
-    meetingSummaries
+    meetingSummaries,
+    userTranscripts
 } from '../db/schema' // added meetings import
 import { mergeComposerFromDB } from '../lib/merge-composer-from-db'
 import { summarizer } from '../lib/transcriber/summary'
@@ -184,6 +185,34 @@ router.get(
                 createdAt: new Date()
             })
 
+            // Save user transcripts
+            await Promise.all(
+                Object.entries(structuredSummary.userWiseTranscripts).map(
+                    async ([username, transcripts]) => {
+                        return await db.insert(userTranscripts).values({
+                            id: v4(),
+                            meetingId: meeting_id,
+                            username,
+                            transcripts: transcripts.map((t) =>
+                                JSON.stringify(t)
+                            ),
+                            chronologicalOrder:
+                                structuredSummary.chronologicalConversation
+                                    .map((entry, index) =>
+                                        entry.username === username
+                                            ? index
+                                            : null
+                                    )
+                                    .filter(
+                                        (index): index is number =>
+                                            index !== null
+                                    ),
+                            createdAt: new Date()
+                        })
+                    }
+                )
+            )
+
             res.status(200).json({
                 success: true,
                 results: mergedResults
@@ -249,6 +278,58 @@ router.get(
             })
         } catch (error) {
             console.error('Error fetching meeting summary:', error)
+            res.status(500).json({
+                success: false,
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unknown error occurred'
+            })
+        }
+    }
+)
+
+// Get chronological conversation for a meeting
+router.get(
+    '/api/meeting/:meeting_id/chronological',
+    async (req: Request, res: Response) => {
+        try {
+            const { meeting_id } = req.params
+
+            const userTranscriptRecords = await db
+                .select()
+                .from(userTranscripts)
+                .where(eq(userTranscripts.meetingId, meeting_id))
+
+            if (!userTranscriptRecords.length) {
+                res.status(404).json({
+                    success: false,
+                    error: 'No transcripts found for this meeting'
+                })
+                return
+            }
+
+            // Reconstruct chronological conversation
+            const chronologicalConversation = userTranscriptRecords
+                .flatMap((record) => {
+                    const transcripts = (record.transcripts || [])
+                        .map((t) => (t ? JSON.parse(t) : null))
+                        .filter(Boolean)
+                    return (record.chronologicalOrder || []).map((index) => ({
+                        index,
+                        username: record.username,
+                        ...transcripts[index]
+                    }))
+                })
+                .sort((a, b) => a.index - b.index)
+                .map(({ index, ...rest }) => rest) // Remove the index from final output
+
+            res.json({
+                success: true,
+                chronologicalConversation
+            })
+        } catch (error) {
+            console.error('Error retrieving chronological conversation:', error)
             res.status(500).json({
                 success: false,
                 error:

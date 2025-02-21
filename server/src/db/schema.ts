@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp } from 'drizzle-orm/pg-core'
+import { pgTable, text, timestamp, integer } from 'drizzle-orm/pg-core'
 
 export const users = pgTable('users', {
     id: text('id').notNull().primaryKey(),
@@ -64,6 +64,20 @@ export const meetingSummaries = pgTable('meeting_summaries', {
     summary: text('summary'),
     keyDiscussion: text('key_discussion').array(), // Changed to array type
     actionItems: text('action_items').array(), // Changed to array type
+    createdAt: timestamp('created_at', {
+        withTimezone: false
+    })
+        .notNull()
+        .defaultNow()
+})
+
+export const userTranscripts = pgTable('user_transcripts', {
+    id: text('id').notNull().primaryKey(),
+    meetingId: text('meeting_id').notNull(),
+    userId: text('user_id'),
+    username: text('username').notNull(),
+    transcripts: text('transcripts').array(), // Array of transcript entries
+    chronologicalOrder: integer('chronological_order').array(), // Store indices for chronological ordering
     createdAt: timestamp('created_at', {
         withTimezone: false
     })
