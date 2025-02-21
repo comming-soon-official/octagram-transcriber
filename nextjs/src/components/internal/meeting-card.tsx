@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/card'
 
 interface MeetingCardProps {
-    id: string
+    id?: string
     title: string
     date: string
     time: string
@@ -20,7 +20,6 @@ interface MeetingCardProps {
 }
 
 export function MeetingCard({
-    id,
     title,
     date,
     time,

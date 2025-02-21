@@ -156,8 +156,8 @@ export default function MeetingOverview() {
                                         </h3>
                                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                                             {summary.keyDiscussion.map(
-                                                (items: any) => (
-                                                    <li>{items}</li>
+                                                (items) => (
+                                                    <li key={items}>{items}</li>
                                                 )
                                             )}
                                         </ul>
@@ -170,8 +170,8 @@ export default function MeetingOverview() {
                                         </h3>
                                         <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                                             {summary.actionItems.map(
-                                                (items: any) => (
-                                                    <li>{items}</li>
+                                                (items) => (
+                                                    <li key={items}>{items}</li>
                                                 )
                                             )}
                                         </ul>
@@ -307,56 +307,6 @@ export default function MeetingOverview() {
         </div>
     )
 }
-
-const timelineItems = [
-    {
-        time: '10:00 AM',
-        topic: 'Meeting Start & Introduction',
-        description: 'Overview of agenda and goals for the quarter'
-    },
-    {
-        time: '10:15 AM',
-        topic: 'Q1 Roadmap Review',
-        description: 'Discussion of planned features and timeline'
-    },
-    {
-        time: '10:45 AM',
-        topic: 'Resource Allocation',
-        description: 'Team capacity planning and hiring needs'
-    },
-    {
-        time: '11:15 AM',
-        topic: 'Action Items & Next Steps',
-        description: 'Assignment of tasks and follow-up meetings'
-    }
-]
-
-const transcriptItems = [
-    {
-        name: 'Sarah Chen',
-        time: '10:00 AM',
-        avatar: '/placeholder.svg',
-        text: "Good morning everyone. Let's get started with our Q1 planning session. I'd like to begin by reviewing our key objectives for the quarter."
-    },
-    {
-        name: 'Mike Johnson',
-        time: '10:02 AM',
-        avatar: '/placeholder.svg',
-        text: "Before we dive in, I've prepared a brief overview of our current sprint completion rates and team velocity."
-    },
-    {
-        name: 'Alex Rodriguez',
-        time: '10:05 AM',
-        avatar: '/placeholder.svg',
-        text: 'I think we should also consider the impact of the new mobile app redesign on our existing resources.'
-    },
-    {
-        name: 'Emily Wong',
-        time: '10:08 AM',
-        avatar: '/placeholder.svg',
-        text: 'Agreed. The design team has already started working on the initial wireframes for the mobile app.'
-    }
-]
 
 const speakers = [
     {

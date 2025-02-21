@@ -19,7 +19,7 @@ export default function MeetingsList() {
                 write({ meetings: data.meetings })
                 setMeetings(data.meetings)
             }
-        } catch (error: any) {
+        } catch (error) {
             console.error('Error fetching meetings:', error)
             setMeetings([])
         }
