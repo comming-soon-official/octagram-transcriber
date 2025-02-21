@@ -48,11 +48,10 @@ export function MeetingCard({
                 <Link href={`/transcribe/${meetingId}`}>
                     <Button>View Details</Button>
                 </Link>
-                {transcribed && (
-                    <Button variant={transcribed ? 'outline' : 'default'}>
-                        {transcribed ? 'Transcribed' : 'Start Transcription'}
-                    </Button>
-                )}
+
+                <Button variant={transcribed ? 'outline' : 'default'}>
+                    {transcribed ? 'Transcribed' : 'Start Transcription'}
+                </Button>
             </CardFooter>
         </Card>
     )
