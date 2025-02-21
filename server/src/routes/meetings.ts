@@ -94,7 +94,9 @@ router.get(
                                 const result = await transcribeFile(
                                     seq.mergedFilePath,
                                     60,
-                                    seq.username
+                                    seq.username,
+                                    seq.startTime,
+                                    seq.endTime
                                 )
                                 if ('jsonPath' in result) {
                                     await db.insert(merged_footages).values({

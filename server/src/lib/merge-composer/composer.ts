@@ -38,16 +38,6 @@ const composer = async (meetingId: string) => {
                 outputPath
             })
 
-            // Store in groupedFootages
-            // await db.insert(schema.groupedFootages).values({
-            //     id: uuidv4(),
-            //     file: outputPath,
-            //     meetingId: meetingId,
-            //     userId: group[0].userId, // using first footage's userId
-            //     startTime: group[0].startTime, // first footage's start time
-            //     endTime: group[group.length - 1].endTime // last footage's end time
-            // })
-
             return outputPath
         })
     )

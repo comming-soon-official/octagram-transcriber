@@ -61,8 +61,8 @@ interface TranscriptionResponse {
 
 export interface TranscribedSegment {
     index: number
-    startTime: string
-    endTime: string
+    startTime: number
+    endTime: number
     text: string
 }
 
@@ -83,13 +83,13 @@ export async function transcribeAudioSegment(
 
         const segments: TranscribedSegment[] = (response.segments ?? []).map(
             (segment, idx) => {
-                const segStart = new Date(startTime * 1000)
-                const segEnd = new Date((startTime + segment.end) * 1000)
+                const segStart = startTime * 1000
+                const segEnd = (startTime + segment.end) * 1000
 
                 return {
                     index: segmentIndex + idx,
-                    startTime: formatDateTimestamp(segStart),
-                    endTime: formatDateTimestamp(segEnd),
+                    startTime: segStart,
+                    endTime: segEnd,
                     text: segment.text.trim()
                 }
             }
@@ -124,7 +124,9 @@ interface TranscribeFileFailure {
 export async function transcribeFile(
     inputFilePath: string,
     segmentDuration: number = 60,
-    username?: string
+    username?: string,
+    startTime?: Date,
+    endTime?: Date
 ): Promise<TranscribeFileSuccess | TranscribeFileFailure> {
     try {
         const tempDir = await splitAudio(inputFilePath, segmentDuration)
@@ -185,6 +187,10 @@ export async function transcribeFile(
             const transcript = JSON.parse(transcriptData)
             transcript.segments = transcript.segments.map((seg: any) => ({
                 ...seg,
+                startTime: new Date(
+                    startTime!.getTime() + seg.startTime * 1000
+                ),
+                endTime: new Date(startTime!.getTime() + seg.endTime * 1000),
                 username: username || seg.username
             }))
             fs.writeFileSync(jsonPath, JSON.stringify(transcript, null, 2))
