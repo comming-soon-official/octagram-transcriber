@@ -289,7 +289,16 @@ router.get(
     }
 )
 
-// Get chronological conversation for a meeting
+interface TranscriptSegment {
+    text: string
+    startTime: Date
+    endTime: Date
+}
+
+interface ChronologicalEntry extends TranscriptSegment {
+    username: string
+}
+
 router.get(
     '/api/meeting/:meeting_id/chronological',
     async (req: Request, res: Response) => {
@@ -310,19 +319,22 @@ router.get(
             }
 
             // Reconstruct chronological conversation
-            const chronologicalConversation = userTranscriptRecords
-                .flatMap((record) => {
-                    const transcripts = (record.transcripts || [])
-                        .map((t) => (t ? JSON.parse(t) : null))
-                        .filter(Boolean)
-                    return (record.chronologicalOrder || []).map((index) => ({
-                        index,
-                        username: record.username,
-                        ...transcripts[index]
-                    }))
-                })
-                .sort((a, b) => a.index - b.index)
-                .map(({ index, ...rest }) => rest) // Remove the index from final output
+            const chronologicalConversation: ChronologicalEntry[] =
+                userTranscriptRecords
+                    .flatMap((record) => {
+                        const transcripts = (record.transcripts || [])
+                            .map((t) => (t ? JSON.parse(t) : null))
+                            .filter(Boolean) as TranscriptSegment[]
+                        return (record.chronologicalOrder || []).map(
+                            (index) => ({
+                                index,
+                                username: record.username,
+                                ...transcripts[index]
+                            })
+                        )
+                    })
+                    .sort((a, b) => a.index - b.index)
+                    .map(({ index, ...rest }) => rest)
 
             res.json({
                 success: true,
