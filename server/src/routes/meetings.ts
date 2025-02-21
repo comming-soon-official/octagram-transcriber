@@ -4,7 +4,12 @@ import { v4 } from 'uuid'
 
 import { endMeeting, initializeMeeting } from '../controllers/meetings'
 import { db } from '../db'
-import { footages, meetings, merged_footages } from '../db/schema' // added meetings import
+import {
+    footages,
+    meetings,
+    merged_footages,
+    meetingSummaries
+} from '../db/schema' // added meetings import
 import { mergeComposerFromDB } from '../lib/merge-composer-from-db'
 import { summarizer } from '../lib/transcriber/summary'
 import { transcribeFile } from '../lib/transcriber/transcribe'
@@ -160,13 +165,22 @@ router.get(
             const filePaths = mergedResults
                 .filter((r) => r.success)
                 .flatMap((r) => r.results?.map((r: any) => r.jsonResult) ?? [])
-            const summary = await summarizer(filePaths)
+            const structuredSummary = await summarizer(filePaths)
             await db
                 .update(meetings)
                 .set({
-                    transcriberOutput: summary
+                    transcriberOutput: structuredSummary.summary
                 })
                 .where(eq(meetings.meetingId, meeting_id))
+
+            await db.insert(meetingSummaries).values({
+                id: v4(),
+                meetingId: meeting_id,
+                summary: structuredSummary.summary,
+                keyDiscussion: structuredSummary.keyDiscussion,
+                actionItems: structuredSummary.actionItems,
+                createdAt: new Date()
+            })
 
             res.status(200).json({
                 success: true,
@@ -205,3 +219,41 @@ router.get('/api/meetings', async (req: Request, res: Response) => {
         })
     }
 })
+
+router.get(
+    '/api/meeting-summary/:meeting_id',
+    async (req: Request, res: Response) => {
+        try {
+            const { meeting_id } = req.params
+
+            const summaries = await db
+                .select()
+                .from(meetingSummaries)
+                .where(eq(meetingSummaries.meetingId, meeting_id))
+                .orderBy(desc(meetingSummaries.createdAt))
+                .limit(1)
+
+            if (summaries.length === 0) {
+                res.status(404).json({
+                    success: false,
+                    error: 'No summary found for this meeting'
+                })
+                return
+            }
+
+            res.json({
+                success: true,
+                summary: summaries[0]
+            })
+        } catch (error) {
+            console.error('Error fetching meeting summary:', error)
+            res.status(500).json({
+                success: false,
+                error:
+                    error instanceof Error
+                        ? error.message
+                        : 'Unknown error occurred'
+            })
+        }
+    }
+)

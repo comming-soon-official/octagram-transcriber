@@ -57,3 +57,16 @@ export const merged_footages = pgTable('merged_footages', {
     transcribeUrl: text('output'),
     transcription: text('transcription')
 })
+
+export const meetingSummaries = pgTable('meeting_summaries', {
+    id: text('id').notNull().primaryKey(),
+    meetingId: text('meeting_id').notNull(),
+    summary: text('summary'),
+    keyDiscussion: text('key_discussion').array(), // Changed to array type
+    actionItems: text('action_items').array(), // Changed to array type
+    createdAt: timestamp('created_at', {
+        withTimezone: false
+    })
+        .notNull()
+        .defaultNow()
+})

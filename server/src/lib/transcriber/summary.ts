@@ -56,13 +56,22 @@ function groupBySpeaker(transcript: TranscriptEntry[]): Record<string, string> {
     }, {} as Record<string, string>)
 }
 
-async function summarizeWithOpenAI(
+async function structuredSummarizeWithOpenAI(
     groupedTranscripts: Record<string, string>
-): Promise<string> {
+): Promise<{
+    summary: string;
+    keyDiscussion: string[];
+    actionItems: string[];
+}> {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_KEY })
 
-    let prompt =
-        'Summarize the following meeting by explaining what each speaker discussed at the given times:\n\n'
+    let prompt = `Analyze the following meeting transcript and provide a structured response with these specific sections:
+1. Overall Summary: A concise summary of the entire meeting
+2. Key Discussion Points: List the main topics discussed and important decisions made (each point as a separate item)
+3. Action Items: List specific tasks, assignments, or follow-up items mentioned (each item as a separate item)
+
+Meeting Transcript:
+`
     for (const speaker in groupedTranscripts) {
         prompt += `${speaker}:\n${groupedTranscripts[speaker]}\n\n`
     }
@@ -70,37 +79,82 @@ async function summarizeWithOpenAI(
     try {
         const completion = await openai.chat.completions.create({
             model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: prompt }]
+            messages: [{ 
+                role: 'user', 
+                content: prompt,
+            }],
+            functions: [
+                {
+                    name: 'processMeetingSummary',
+                    description: 'Process and structure the meeting summary',
+                    parameters: {
+                        type: 'object',
+                        properties: {
+                            summary: {
+                                type: 'string',
+                                description: 'Overall summary of the meeting'
+                            },
+                            keyDiscussion: {
+                                type: 'array',
+                                items: {
+                                    type: 'string'
+                                },
+                                description: 'Array of key discussion points and decisions'
+                            },
+                            actionItems: {
+                                type: 'array',
+                                items: {
+                                    type: 'string'
+                                },
+                                description: 'Array of action items and follow-up tasks'
+                            }
+                        },
+                        required: ['summary', 'keyDiscussion', 'actionItems']
+                    }
+                }
+            ],
+            function_call: { name: 'processMeetingSummary' }
         })
-        return completion.choices[0].message?.content || 'No summary generated.'
+
+        const functionCall = completion.choices[0].message?.function_call
+        if (functionCall?.arguments) {
+            const result = JSON.parse(functionCall.arguments)
+            return {
+                summary: result.summary,
+                keyDiscussion: result.keyDiscussion,
+                actionItems: result.actionItems
+            }
+        }
+
+        throw new Error('Failed to generate structured summary')
     } catch (error) {
         console.error('Error calling OpenAI API:', error)
-        return 'Error generating summary.'
+        return {
+            summary: 'Error generating summary.',
+            keyDiscussion: [],
+            actionItems: []
+        }
     }
 }
 
-export async function summarizer(filesPaths: any) {
-    console.log(filesPaths)
-
-    // if (Array(filesPaths)) return
-
+export async function summarizer(filesPaths: string[]) {
     try {
         // Read and merge transcripts
         const transcriptsArrays = await Promise.all(
-            filesPaths.map((filePath: any) =>
+            filesPaths.map((filePath) =>
                 Promise.resolve(readTranscript(filePath))
             )
         )
         const mergedTranscript = transcriptsArrays.flat()
         // Group text by speaker
         const groupedTranscripts = groupBySpeaker(mergedTranscript)
-        // Generate meeting summary
-        const summary = await summarizeWithOpenAI(groupedTranscripts)
+        // Generate structured meeting summary
+        const structuredSummary = await structuredSummarizeWithOpenAI(groupedTranscripts)
 
-        console.log('Meeting Summary:')
-        console.log(summary)
-        return summary
+        console.log('Meeting Summary:', structuredSummary)
+        return structuredSummary
     } catch (error) {
         console.error('Error processing transcripts:', error)
+        throw error
     }
 }
