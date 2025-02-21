@@ -42,7 +42,7 @@ export default function MeetingOverview() {
         if (!meeting) return
         try {
             const response = await fetch(
-                `http://localhost:8000/api/merge-audio/${meeting.meetingId}`
+                `https://octagram-transcriber-production.up.railway.app/api/merge-audio/${meeting.meetingId}`
             )
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
@@ -57,7 +57,7 @@ export default function MeetingOverview() {
         if (!meeting) return
         try {
             const response = await fetch(
-                `http://localhost:8000/api/meeting-summary/${meeting.meetingId}`
+                `https://octagram-transcriber-production.up.railway.app/api/meeting-summary/${meeting.meetingId}`
             )
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
@@ -77,7 +77,7 @@ export default function MeetingOverview() {
         if (!meeting) return
         try {
             const response = await fetch(
-                `http://localhost:8000/api/meeting/${meeting.meetingId}/chronological`
+                `https://octagram-transcriber-production.up.railway.app/api/meeting/${meeting.meetingId}/chronological`
             )
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)

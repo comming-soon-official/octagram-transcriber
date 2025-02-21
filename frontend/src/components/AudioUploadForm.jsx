@@ -33,7 +33,7 @@ function AudioUploadForm() {
                 formPayload.append('chunkType', chunkType)
 
                 const response = await fetch(
-                    'http://localhost:8000/send/audio-chunks',
+                    'https://octagram-transcriber-production.up.railway.app/send/audio-chunks',
                     {
                         method: 'POST',
                         body: formPayload
@@ -54,7 +54,7 @@ function AudioUploadForm() {
     const startMeeting = async () => {
         try {
             const response = await fetch(
-                'http://localhost:8000/api/start-meeting',
+                'https://octagram-transcriber-production.up.railway.app/api/start-meeting',
                 {
                     method: 'POST',
                     headers: {
@@ -75,7 +75,7 @@ function AudioUploadForm() {
         try {
             stopRecording()
             const response = await fetch(
-                'http://localhost:8000/api/end-meeting',
+                'https://octagram-transcriber-production.up.railway.app/api/end-meeting',
                 {
                     method: 'POST',
                     headers: {

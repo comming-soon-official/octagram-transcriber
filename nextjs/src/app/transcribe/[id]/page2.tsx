@@ -44,7 +44,7 @@ export default function MeetingDetails() {
         setIsTranscribing(true)
         try {
             const response = await fetch(
-                `http://localhost:8000/api/meeting-summary/${meeting.meetingId}`
+                `https://octagram-transcriber-production.up.railway.app/api/meeting-summary/${meeting.meetingId}`
             )
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`)
@@ -80,7 +80,7 @@ export default function MeetingDetails() {
         if (!meeting) return
         try {
             const response = await fetch(
-                'http://localhost:8000/api/get-transcript',
+                'https://octagram-transcriber-production.up.railway.app/api/get-transcript',
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
