@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import { OpenAI } from 'openai'
+import { formatTranscriptForDisplay, organizeTranscriptByUser } from './user-summary'
 
 interface TranscriptEntry {
     speaker: string
@@ -146,13 +147,30 @@ export async function summarizer(filesPaths: string[]) {
             )
         )
         const mergedTranscript = transcriptsArrays.flat()
-        // Group text by speaker
+        
+        // Get both user-wise organization and chronological conversation
+        const {
+            userWiseTranscripts,
+            chronologicalConversation
+        } = organizeTranscriptByUser(mergedTranscript)
+
+        // Format the transcripts for readable output
+        const formattedTranscripts = formatTranscriptForDisplay(
+            userWiseTranscripts,
+            chronologicalConversation
+        )
+
+        // Group text by speaker for structured summary
         const groupedTranscripts = groupBySpeaker(mergedTranscript)
         // Generate structured meeting summary
         const structuredSummary = await structuredSummarizeWithOpenAI(groupedTranscripts)
 
-        console.log('Meeting Summary:', structuredSummary)
-        return structuredSummary
+        return {
+            ...structuredSummary,
+            userWiseTranscripts,
+            chronologicalConversation,
+            formattedOutput: formattedTranscripts
+        }
     } catch (error) {
         console.error('Error processing transcripts:', error)
         throw error
