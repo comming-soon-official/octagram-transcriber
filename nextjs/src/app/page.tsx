@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Clock, BarChart2, Mic } from "lucide-react";
 
 import { MeetingCard } from "@/components/internal/meeting-card";
-import { MeetingTypes, useUniversalStore } from "@/store/useUniversalStore";
+import { MeetingTypes } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 export default function MeetingsList() {
   const [meetings, setMeetings] = useState<MeetingTypes[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const { write, setSelectedMeeting } = useUniversalStore();
 
   const fetchMeetings = async () => {
     setIsLoading(true);
@@ -24,7 +23,6 @@ export default function MeetingsList() {
       }
       const data = await response.json();
       if (data.success) {
-        write({ meetings: data.meetings });
         setMeetings(data.meetings);
       }
     } catch (error) {
@@ -33,10 +31,6 @@ export default function MeetingsList() {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleSelectMeeting = (meetingId: string) => {
-    setSelectedMeeting(meetingId);
   };
 
   useEffect(() => {
@@ -131,11 +125,7 @@ export default function MeetingsList() {
             ) : recentMeetings.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {recentMeetings.map((meeting) => (
-                  <div
-                    key={meeting.id}
-                    className="flex flex-col gap-2"
-                    onClick={() => handleSelectMeeting(meeting.id)}
-                  >
+                  <div key={meeting.id} className="flex flex-col gap-2">
                     <MeetingCard
                       id={meeting.id}
                       meetingId={meeting.meetingId}
@@ -167,11 +157,7 @@ export default function MeetingsList() {
             ) : meetings.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {meetings.map((meeting) => (
-                  <div
-                    key={meeting.id}
-                    className="flex flex-col gap-2"
-                    onClick={() => handleSelectMeeting(meeting.id)}
-                  >
+                  <div key={meeting.id} className="flex flex-col gap-2">
                     <MeetingCard
                       id={meeting.id}
                       meetingId={meeting.meetingId}
@@ -203,11 +189,7 @@ export default function MeetingsList() {
                 {meetings
                   .filter((meeting) => meeting.transcriberOutput)
                   .map((meeting) => (
-                    <div
-                      key={meeting.id}
-                      className="flex flex-col gap-2"
-                      onClick={() => handleSelectMeeting(meeting.id)}
-                    >
+                    <div key={meeting.id} className="flex flex-col gap-2">
                       <MeetingCard
                         id={meeting.id}
                         meetingId={meeting.meetingId}

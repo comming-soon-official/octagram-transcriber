@@ -1,18 +1,19 @@
 "use client";
-import { Play, Users } from "lucide-react";
+import { Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MeetingTypes } from "@/store/useUniversalStore";
+import { MeetingTypes } from "@/types";
+import { TranscriptButton } from "@/components/TranscriptButton";
+import { formatDate } from "@/lib/utils";
 
 interface TranscriptSegment {
   text: string;
-  startTime: Date;
-  endTime: Date;
+  startTime: string;
+  endTime: string;
 }
 
 interface ChronologicalEntry extends TranscriptSegment {
@@ -57,21 +58,6 @@ export default function MeetingOverview() {
     }
   }, []);
 
-  const handleTranscribe = useCallback(async () => {
-    if (!meeting) return;
-    try {
-      const response = await fetch(
-        `https://octagram-transcriber-production.up.railway.app/api/merge-audio/${meeting.meetingId}`
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log(data);
-    } catch (error) {
-      console.error("Transcription error:", error);
-    }
-  }, [meeting]);
   const fetchSummary = useCallback(async () => {
     if (!meeting) return;
     try {
@@ -131,11 +117,24 @@ export default function MeetingOverview() {
             {/* Q1 2024 Product Planning */}
           </h1>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>{meeting?.createdAt}</span>
+            <span>{formatDate(meeting?.createdAt)}</span>
             {/* <span>Feb 20, 2024</span> */}
             <span>•</span>
-
-            <span>{`${meeting?.createdAt}-${meeting?.endedAt}`}</span>
+            <span>
+              {meeting?.createdAt && meeting?.endedAt
+                ? `${new Intl.DateTimeFormat("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true
+                  }).format(
+                    new Date(meeting.createdAt)
+                  )} - ${new Intl.DateTimeFormat("en-US", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: true
+                  }).format(new Date(meeting.endedAt))}`
+                : "N/A"}
+            </span>
             {/* <span>10:00 AM - 11:30 AM</span> */}
             <span>•</span>
             <div className="flex items-center gap-1">
@@ -144,14 +143,10 @@ export default function MeetingOverview() {
             </div>
           </div>
         </div>
-        <Button
-          variant="outline"
-          onClick={handleTranscribe}
+        <TranscriptButton
+          meetingId={meeting?.meetingId}
           disabled={summary.summary !== ""}
-        >
-          <Play className="mr-2 h-4 w-4" />
-          Transcript
-        </Button>
+        />
       </div>
 
       <Tabs defaultValue="summary" className="space-y-4">
@@ -218,16 +213,12 @@ export default function MeetingOverview() {
                     <div className="flex-1 space-y-1">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold">{item.username}</span>
-                        <span className="text-sm opacity-60">
-                          {new Intl.DateTimeFormat("en-US", {
-                            year: "numeric",
-                            month: "short",
-                            day: "numeric",
-                            hour: "2-digit",
-                            minute: "2-digit",
-                            hour12: true
-                          }).format(new Date(item.startTime))}{" "}
-                        </span>
+
+                        {item.startTime ? (
+                          <span className="text-sm opacity-60">
+                            {formatDate(item.startTime)}
+                          </span>
+                        ) : null}
                       </div>
                       <p className="text-muted-foreground">{item.text}</p>
                     </div>
