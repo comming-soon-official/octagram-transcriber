@@ -1,340 +1,243 @@
-'use client'
-import { Play, Users } from 'lucide-react'
-import { useParams } from 'next/navigation'
-import { useEffect, useState } from 'react'
+"use client";
+import { Play, Users } from "lucide-react";
+import { useParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { useUniversalStore } from '@/store/useUniversalStore'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MeetingTypes } from "@/store/useUniversalStore";
 
 interface TranscriptSegment {
-    text: string
-    startTime: Date
-    endTime: Date
+  text: string;
+  startTime: Date;
+  endTime: Date;
 }
 
 interface ChronologicalEntry extends TranscriptSegment {
-    username: string
+  username: string;
 }
 
 interface SummaryData {
-    summary: string
-    keyDiscussion: string[]
-    actionItems: string[]
+  summary: string;
+  keyDiscussion: string[];
+  actionItems: string[];
 }
 export default function MeetingOverview() {
-    const [summary, setSummary] = useState<SummaryData>({
-        summary: '',
-        keyDiscussion: [],
-        actionItems: []
-    })
-    const { id } = useParams() as { id: string }
+  const [summary, setSummary] = useState<SummaryData>({
+    summary: "",
+    keyDiscussion: [],
+    actionItems: []
+  });
+  const { id } = useParams() as { id: string };
+  console.log(id);
+  const [transcribe, setTranscribe] = useState<ChronologicalEntry[]>();
 
-    const { meetings, selectedMeetingId } = useUniversalStore()
-    const effectiveId = selectedMeetingId || id
-    const meeting = meetings.find((m) => m.id === effectiveId)
-    const [transcribe, setTranscribe] = useState<ChronologicalEntry[]>()
+  const [meetings, setMeetings] = useState<MeetingTypes[]>([]);
+  const meeting = useMemo(
+    () => meetings.find((m) => m.meetingId === id),
+    [id, meetings]
+  );
+  console.log(meetings, meeting);
 
-    const handleTranscribe = async () => {
-        if (!meeting) return
-        try {
-            const response = await fetch(
-                `https://octagram-transcriber-production.up.railway.app/api/merge-audio/${meeting.meetingId}`
-            )
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            console.log(data)
-        } catch (error) {
-            console.error('Transcription error:', error)
-        }
+  const fetchMeetings = useCallback(async () => {
+    try {
+      const response = await fetch("/api/meetings");
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (data.success) {
+        setMeetings(data.meetings);
+      }
+    } catch (error) {
+      console.error("Error fetching meetings:", error);
+      setMeetings([]);
     }
-    const fetchSummary = async () => {
-        if (!meeting) return
-        try {
-            const response = await fetch(
-                `https://octagram-transcriber-production.up.railway.app/api/meeting-summary/${meeting.meetingId}`
-            )
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            console.log(data.summary)
+  }, []);
 
-            setSummary(data.summary)
-
-            // setSummary(data)
-        } catch (error) {
-            console.error('Summary error:', error)
-        }
+  const handleTranscribe = useCallback(async () => {
+    if (!meeting) return;
+    try {
+      const response = await fetch(
+        `https://octagram-transcriber-production.up.railway.app/api/merge-audio/${meeting.meetingId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data);
+    } catch (error) {
+      console.error("Transcription error:", error);
     }
+  }, [meeting]);
+  const fetchSummary = useCallback(async () => {
+    if (!meeting) return;
+    try {
+      const response = await fetch(
+        `https://octagram-transcriber-production.up.railway.app/api/meeting-summary/${meeting.meetingId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data.summary);
 
-    const fetchUserTranscript = async () => {
-        if (!meeting) return
-        try {
-            const response = await fetch(
-                `https://octagram-transcriber-production.up.railway.app/api/meeting/${meeting.meetingId}/chronological`
-            )
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`)
-            }
-            const data = await response.json()
-            console.log(data.chronologicalConversation)
-            setTranscribe(data.chronologicalConversation)
-            // setSummary(data.summary)
+      setSummary(data.summary);
 
-            // setSummary(data)
-        } catch (error) {
-            console.error('Summary error:', error)
-        }
+      // setSummary(data)
+    } catch (error) {
+      console.error("Summary error:", error);
     }
+  }, [meeting]);
 
-    useEffect(() => {
-        fetchSummary()
-        fetchUserTranscript()
-    }, [])
-    return (
-        <div className="container mx-auto py-6 max-w-6xl">
-            {/* Meeting Header */}
-            <div className="flex justify-between items-start mb-8">
-                <div>
-                    <h1 className="text-2xl font-bold mb-2">
-                        {meeting?.meetingId}
-                        {/* Q1 2024 Product Planning */}
-                    </h1>
-                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                        <span>{meeting?.createdAt}</span>
-                        {/* <span>Feb 20, 2024</span> */}
-                        <span>•</span>
+  const fetchUserTranscript = useCallback(async () => {
+    if (!meeting) return;
+    try {
+      const response = await fetch(
+        `https://octagram-transcriber-production.up.railway.app/api/meeting/${meeting.meetingId}/chronological`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log(data.chronologicalConversation);
+      setTranscribe(data.chronologicalConversation);
+      // setSummary(data.summary)
 
-                        <span>{`${meeting?.createdAt}-${meeting?.endedAt}`}</span>
-                        {/* <span>10:00 AM - 11:30 AM</span> */}
-                        <span>•</span>
-                        <div className="flex items-center gap-1">
-                            <Users className="h-4 w-4" />
-                            {/* <span>8 Participants</span> */}
-                        </div>
-                    </div>
-                </div>
-                <Button
-                    variant="outline"
-                    onClick={handleTranscribe}
-                    disabled={summary.summary !== ''}
-                >
-                    <Play className="mr-2 h-4 w-4" />
-                    Transcript
-                </Button>
+      // setSummary(data)
+    } catch (error) {
+      console.error("Summary error:", error);
+    }
+  }, [meeting]);
+
+  useEffect(() => {
+    fetchSummary();
+    fetchUserTranscript();
+  }, [fetchMeetings, fetchSummary, fetchUserTranscript]);
+
+  useEffect(() => {
+    fetchMeetings();
+  }, [fetchMeetings]);
+
+  return (
+    <div className="container mx-auto py-6 max-w-6xl">
+      {/* Meeting Header */}
+      <div className="flex justify-between items-start mb-8">
+        <div>
+          <h1 className="text-2xl font-bold mb-2">
+            {meeting?.meetingId}
+            {/* Q1 2024 Product Planning */}
+          </h1>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span>{meeting?.createdAt}</span>
+            {/* <span>Feb 20, 2024</span> */}
+            <span>•</span>
+
+            <span>{`${meeting?.createdAt}-${meeting?.endedAt}`}</span>
+            {/* <span>10:00 AM - 11:30 AM</span> */}
+            <span>•</span>
+            <div className="flex items-center gap-1">
+              <Users className="h-4 w-4" />
+              {/* <span>8 Participants</span> */}
             </div>
-
-            <Tabs defaultValue="summary" className="space-y-4">
-                <TabsList>
-                    <TabsTrigger value="summary">Summary</TabsTrigger>
-                    <TabsTrigger value="transcript">Transcript</TabsTrigger>
-                    {/* <TabsTrigger value="speakers">Speakers</TabsTrigger> */}
-                </TabsList>
-
-                {/* Summary Tab */}
-                <TabsContent value="summary" className="space-y-6">
-                    {summary && (
-                        <Card>
-                            <CardHeader>
-                                <CardTitle>Meeting Summary</CardTitle>
-                            </CardHeader>
-                            <CardContent className="space-y-4">
-                                <p className="text-muted-foreground">
-                                    {summary?.summary}
-                                </p>
-
-                                {summary.keyDiscussion.length > 0 && (
-                                    <div className="space-y-2">
-                                        <h3 className="font-semibold">
-                                            Key Decisions:
-                                        </h3>
-                                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                            {summary.keyDiscussion.map(
-                                                (items) => (
-                                                    <li key={items}>{items}</li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
-                                )}
-                                {summary.actionItems.length > 0 && (
-                                    <div className="space-y-2">
-                                        <h3 className="font-semibold">
-                                            Action Items:
-                                        </h3>
-                                        <ul className="list-disc list-inside space-y-1 text-muted-foreground">
-                                            {summary.actionItems.map(
-                                                (items) => (
-                                                    <li key={items}>{items}</li>
-                                                )
-                                            )}
-                                        </ul>
-                                    </div>
-                                )}
-                            </CardContent>
-                        </Card>
-                    )}
-                    {/* 
-                    <Card>
-                        <CardHeader>
-                            <CardTitle>Timeline Overview</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="space-y-4">
-                                {timelineItems.map((item, index) => (
-                                    <div key={index} className="flex gap-4">
-                                        <div className="w-24 text-sm text-muted-foreground">
-                                            {item.time}
-                                        </div>
-                                        <div>
-                                            <p className="font-medium">
-                                                {item.topic}
-                                            </p>
-                                            <p className="text-sm text-muted-foreground">
-                                                {item.description}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card> */}
-                </TabsContent>
-
-                {/* Transcript Tab */}
-                <TabsContent value="transcript">
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="space-y-6">
-                                {transcribe?.map((item, index) => (
-                                    <div key={index} className="flex gap-4">
-                                        <Avatar className="h-8 w-8">
-                                            <AvatarImage
-                                                // src={item.avatar}
-                                                alt={item.username}
-                                            />
-                                            <AvatarFallback className="bg-gray-200">
-                                                {item.username
-                                                    .split(' ')
-                                                    .map((n) => n[0])
-                                                    .join('')}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="flex-1 space-y-1">
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-semibold">
-                                                    {item.username}
-                                                </span>
-                                                <span className="text-sm opacity-60">
-                                                    {new Intl.DateTimeFormat(
-                                                        'en-US',
-                                                        {
-                                                            year: 'numeric',
-                                                            month: 'short',
-                                                            day: 'numeric',
-                                                            hour: '2-digit',
-                                                            minute: '2-digit',
-                                                            hour12: true
-                                                        }
-                                                    ).format(
-                                                        new Date(item.startTime)
-                                                    )}{' '}
-                                                </span>
-                                            </div>
-                                            <p className="text-muted-foreground">
-                                                {item.text}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-
-                {/* Speakers Tab */}
-                <TabsContent value="speakers">
-                    <Card>
-                        <CardContent className="pt-6">
-                            <div className="grid gap-6 md:grid-cols-2">
-                                {speakers.map((speaker, index) => (
-                                    <div
-                                        key={index}
-                                        className="flex items-start gap-4"
-                                    >
-                                        <Avatar className="h-10 w-10">
-                                            <AvatarImage
-                                                src={speaker.avatar}
-                                                alt={speaker.name}
-                                            />
-                                            <AvatarFallback>
-                                                {speaker.name
-                                                    .split(' ')
-                                                    .map((n) => n[0])
-                                                    .join('')}
-                                            </AvatarFallback>
-                                        </Avatar>
-                                        <div className="space-y-1">
-                                            <div className="font-medium">
-                                                {speaker.name}
-                                            </div>
-                                            <div className="text-sm text-muted-foreground">
-                                                {speaker.role}
-                                            </div>
-                                            <div className="flex gap-2 mt-1">
-                                                <Badge variant="secondary">
-                                                    {speaker.speakingTime}
-                                                </Badge>
-                                                <Badge variant="secondary">
-                                                    {speaker.messageCount}{' '}
-                                                    messages
-                                                </Badge>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </CardContent>
-                    </Card>
-                </TabsContent>
-            </Tabs>
+          </div>
         </div>
-    )
-}
+        <Button
+          variant="outline"
+          onClick={handleTranscribe}
+          disabled={summary.summary !== ""}
+        >
+          <Play className="mr-2 h-4 w-4" />
+          Transcript
+        </Button>
+      </div>
 
-const speakers = [
-    {
-        name: 'Sarah Chen',
-        role: 'Product Manager',
-        avatar: '/placeholder.svg',
-        speakingTime: '25 mins',
-        messageCount: 15
-    },
-    {
-        name: 'Mike Johnson',
-        role: 'Engineering Lead',
-        avatar: '/placeholder.svg',
-        speakingTime: '18 mins',
-        messageCount: 12
-    },
-    {
-        name: 'Alex Rodriguez',
-        role: 'Backend Developer',
-        avatar: '/placeholder.svg',
-        speakingTime: '15 mins',
-        messageCount: 8
-    },
-    {
-        name: 'Emily Wong',
-        role: 'UX Designer',
-        avatar: '/placeholder.svg',
-        speakingTime: '12 mins',
-        messageCount: 6
-    }
-]
+      <Tabs defaultValue="summary" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="summary">Summary</TabsTrigger>
+          <TabsTrigger value="transcript">Transcript</TabsTrigger>
+          {/* <TabsTrigger value="speakers">Speakers</TabsTrigger> */}
+        </TabsList>
+
+        {/* Summary Tab */}
+        <TabsContent value="summary" className="space-y-6">
+          {summary && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Meeting Summary</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">{summary?.summary}</p>
+
+                {summary.keyDiscussion.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">Key Decisions:</h3>
+                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                      {summary.keyDiscussion.map((items) => (
+                        <li key={items}>{items}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {summary.actionItems.length > 0 && (
+                  <div className="space-y-2">
+                    <h3 className="font-semibold">Action Items:</h3>
+                    <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                      {summary.actionItems.map((items) => (
+                        <li key={items}>{items}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        {/* Transcript Tab */}
+        <TabsContent value="transcript">
+          <Card>
+            <CardContent className="pt-6">
+              <div className="space-y-6">
+                {transcribe?.map((item, index) => (
+                  <div key={index} className="flex gap-4">
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage
+                        // src={item.avatar}
+                        alt={item.username}
+                      />
+                      <AvatarFallback className="bg-gray-200">
+                        {item.username
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 space-y-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">{item.username}</span>
+                        <span className="text-sm opacity-60">
+                          {new Intl.DateTimeFormat("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true
+                          }).format(new Date(item.startTime))}{" "}
+                        </span>
+                      </div>
+                      <p className="text-muted-foreground">{item.text}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
