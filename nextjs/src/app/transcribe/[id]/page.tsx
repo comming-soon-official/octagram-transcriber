@@ -3,7 +3,7 @@ import { Users } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MeetingTypes } from "@/types";
@@ -42,6 +42,36 @@ export default function MeetingOverview() {
   );
   console.log(meetings, meeting);
 
+  const avatarColors = useMemo(
+    () => [
+      "bg-red-500",
+      "bg-green-500",
+      "bg-blue-500",
+      "bg-yellow-500",
+      "bg-purple-500",
+      "bg-orange-500",
+      "bg-teal-500",
+      "bg-pink-500"
+    ],
+    []
+  );
+
+  const userColors = useMemo(() => {
+    const colors: { [key: string]: string } = {};
+    return colors;
+  }, []);
+
+  const getColorForUser = useCallback(
+    (username: string) => {
+      if (!userColors[username]) {
+        const colorIndex = Object.keys(userColors).length % avatarColors.length;
+        userColors[username] = avatarColors[colorIndex];
+      }
+      return userColors[username];
+    },
+    [avatarColors, userColors]
+  );
+
   const fetchMeetings = useCallback(async () => {
     try {
       const response = await fetch("/api/meetings");
@@ -61,9 +91,7 @@ export default function MeetingOverview() {
   const fetchSummary = useCallback(async () => {
     if (!meeting) return;
     try {
-      const response = await fetch(
-        `https://octagram-transcriber-production.up.railway.app/api/meeting-summary/${meeting.meetingId}`
-      );
+      const response = await fetch(`/api/meeting-summary/${meeting.meetingId}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -82,7 +110,7 @@ export default function MeetingOverview() {
     if (!meeting) return;
     try {
       const response = await fetch(
-        `https://octagram-transcriber-production.up.railway.app/api/meeting/${meeting.meetingId}/chronological`
+        `/api/meeting/${meeting.meetingId}/chronological`
       );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -199,11 +227,11 @@ export default function MeetingOverview() {
                 {transcribe?.map((item, index) => (
                   <div key={index} className="flex gap-4">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        // src={item.avatar}
-                        alt={item.username}
-                      />
-                      <AvatarFallback className="bg-gray-200">
+                      <AvatarFallback
+                        className={`${getColorForUser(
+                          item.username
+                        )} text-white`}
+                      >
                         {item.username
                           .split(" ")
                           .map((n) => n[0])
